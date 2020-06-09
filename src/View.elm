@@ -5,7 +5,7 @@ import Svg exposing (..)
 import Svg.Attributes exposing (..)
 
 import Html exposing (Html, button, div, text)
-import Html.Attributes exposing (style,src,controls)
+import Html.Attributes exposing (style,src,controls,autoplay)
 import Html.Events exposing (on, onClick, onMouseDown, onMouseUp)
 
 import Model exposing (Model, attribute,State(..))
@@ -15,23 +15,16 @@ import Message exposing (Msg(..))
 view : Model -> Html Msg
 view model =
     let
-            nodes_1= renderbackground
-                :: renderFrame
-                :: renderLogo
-                :: renderPaddle model.player1.paddle
-                :: renderBall  model.player1.ball
-                :: renderBricks (List.append (List.append model.bricks model.player1.fallingcard) model.player1.handcard)
-            nodes_2=renderbackground
-                :: renderFrame
-                :: renderLogo
-                :: renderPaddle model.player2.paddle
-                :: renderBall model.player2.ball
-                :: renderBricks (List.append (List.append model.bricks model.player2.fallingcard) model.player2.handcard)
+            gameUIAttribute = 
+                [ width (String.fromFloat (model.size.x*2/5))
+                , height (String.fromFloat model.size.y)
+                , viewBox "0 0 600 800"
+                ]
             renderHtml =
                 case model.state of
                     Playing->
                         audio
-                            [src "bgm/1.mp3", (controls True)]
+                            [src "bgm/1.mp3", (autoplay True)]
                             [Html.text "Your browser does not support the audio"]
                     Paused->
                         renderStart model
@@ -39,22 +32,26 @@ view model =
         div
             []
             [ svg
-                [   transform ("translate("++(String.fromFloat (model.size.x/20))++" 0)")
-                ,   width (String.fromFloat (model.size.x*2/5))
-                ,   height (String.fromFloat model.size.y)
-                ,   viewBox "0 0 600 800"
-                ]
-                nodes_1
+                (transform ("translate("++(String.fromFloat (model.size.x/20))++" 0)")
+                :: gameUIAttribute)
+                (renderPlayer model.bricks model.player1)
             , svg
-                [   transform ("translate("++(String.fromFloat (model.size.x*3/20))++" 0)")
-                ,   width (String.fromFloat (model.size.x*2/5))
-                ,   height (String.fromFloat model.size.y)
-                ,   viewBox "0 0 600 800"
-                ]
-                nodes_2
+                (transform ("translate("++(String.fromFloat (model.size.x*3/20))++" 0)")
+                :: gameUIAttribute)
+                (renderPlayer model.bricks model.player2)
             , span[][renderHtml]
             ]
-        
+
+
+renderPlayer bricks player = 
+    renderbackground
+    :: renderFrame
+    :: renderLogo
+    :: renderPaddle player.paddle
+    :: renderBall  player.ball
+    :: renderBricks (List.append (List.append bricks player.fallingcard) player.handcard)
+
+
 renderBall ball =
     let 
         ref = 

@@ -20,6 +20,8 @@ import Svg.Attributes exposing (speed)
 import List exposing (range)
 import Svg exposing (a)
 import Json.Encode exposing (int)
+import Random
+import Html.Attributes exposing (value)
 type alias Vector a=
     { x:a
     , y:a
@@ -108,10 +110,12 @@ posXList =
         |> List.map (\x-> ((toFloat x))*brickWidth))
 posYList = List.range 0 (attribute.bricksNum.y-1)
             |> List.map (\x-> ((toFloat x))*brickHeight)
+
+
+
 initBricks: List Brick
 initBricks = 
     let
-
         bricks=List.map (generateRow 1) posYList
     in
         List.concat bricks

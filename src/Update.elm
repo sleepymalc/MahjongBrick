@@ -129,8 +129,9 @@ catchHandcard player =
                     {card | 
                         pos=Vector (posx+ handcardSetOff(List.append handcard player.handcard)) Model.attribute.handcardPosY}
                     ) Model.posXList
+        newFallingcard=List.filter (\card->card.pos.y<(Model.attribute.range.y*2/3+25)) fallingcard
     in
-        {player|fallingcard=fallingcard,handcard=newHandcard}
+        {player|fallingcard=newFallingcard,handcard=newHandcard}
    -- ((bricks.pos.y+bricks.size.y)>paddle.pos.y&&(bricks.pos.x |>inRange paddle.pos.x paddle.pos.x-))
      
 
@@ -167,7 +168,7 @@ moveBall state bricks player=
             |>collideWallX
             |>collideWallY
             |>collidePaddle player.paddle
-        newBall = {ball|pos= addVector ball.pos ball.speed}
+        newBall = {ball|pos= addVector ball.pos ball.speed,imgIndex=modBy 6 (ball.imgIndex+1)}
     in
     {player|ball=newBall}
 
