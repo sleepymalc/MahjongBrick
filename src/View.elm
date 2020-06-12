@@ -24,7 +24,7 @@ view model =
                 case model.state of
                     Playing->
                         audio
-                            [src "/src/bgm/1.mp3", (autoplay True)]
+                            [src "bgm/1.mp3", (autoplay True)]
                             [Html.text "Your browser does not support the audio"]
                     Paused->
                         renderStart model
@@ -56,9 +56,9 @@ renderBall ball =
     let 
         ref = 
             if ball.speed == {x=0,y=0} then 
-                "./src/img/dice/dice_"++(String.fromInt 1)++".png"
+                "img/dice/dice_"++(String.fromInt 1)++".png"
             else 
-                "./src/img/dice/dice_rolling_"++(String.fromInt (ball.imgIndex+1))++".png"
+                "img/dice/dice_rolling_"++(String.fromInt (ball.imgIndex+1))++".png"
     in 
     Svg.image
         [   xlinkHref ref
@@ -71,7 +71,7 @@ renderBall ball =
 
 renderLogo =
     Svg.image
-        [  xlinkHref "./src/img/0.png"
+        [  xlinkHref "img/0.png"
         , x "0"
         , y "0"
         , width (String.fromFloat Model.attribute.range.x)
@@ -106,7 +106,7 @@ renderbackground =
     
 renderFrame =
     Svg.image
-        [ xlinkHref "./src/img/frame.png"
+        [ xlinkHref "img/frame.png"
         , x "0"
         , y "0"
         , width (String.fromFloat Model.attribute.range.x)
@@ -115,7 +115,7 @@ renderFrame =
     []
 renderBrick brick =
     Svg.image
-        [  xlinkHref "./src/img/02_46.png"
+        [  xlinkHref "img/02_46.png"
         , width (String.fromFloat brick.size.x)--(String.fromFloat 40.2)
         , height (String.fromFloat brick.size.y)--(String.fromFloat 52.8)
         , x (String.fromFloat brick.pos.x)

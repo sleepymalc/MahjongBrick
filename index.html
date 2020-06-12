@@ -6289,7 +6289,7 @@ var $elm$svg$Svg$Attributes$y = _VirtualDom_attribute('y');
 var $author$project$View$renderBall = function (ball) {
 	var ref = _Utils_eq(
 		ball.speed,
-		{x: 0, y: 0}) ? ('./src/img/dice/dice_' + ($elm$core$String$fromInt(1) + '.png')) : ('./src/img/dice/dice_rolling_' + ($elm$core$String$fromInt(ball.imgIndex + 1) + '.png'));
+		{x: 0, y: 0}) ? ('img/dice/dice_' + ($elm$core$String$fromInt(1) + '.png')) : ('img/dice/dice_rolling_' + ($elm$core$String$fromInt(ball.imgIndex + 1) + '.png'));
 	return A2(
 		$elm$svg$Svg$image,
 		_List_fromArray(
@@ -6313,7 +6313,7 @@ var $author$project$View$renderBrick = function (brick) {
 		$elm$svg$Svg$image,
 		_List_fromArray(
 			[
-				$elm$svg$Svg$Attributes$xlinkHref('./src/img/02_46.png'),
+				$elm$svg$Svg$Attributes$xlinkHref('img/02_46.png'),
 				$elm$svg$Svg$Attributes$width(
 				$elm$core$String$fromFloat(brick.size.x)),
 				$elm$svg$Svg$Attributes$height(
@@ -6334,7 +6334,7 @@ var $author$project$View$renderFrame = A2(
 	$elm$svg$Svg$image,
 	_List_fromArray(
 		[
-			$elm$svg$Svg$Attributes$xlinkHref('./src/img/frame.png'),
+			$elm$svg$Svg$Attributes$xlinkHref('img/frame.png'),
 			$elm$svg$Svg$Attributes$x('0'),
 			$elm$svg$Svg$Attributes$y('0'),
 			$elm$svg$Svg$Attributes$width(
@@ -6347,7 +6347,7 @@ var $author$project$View$renderLogo = A2(
 	$elm$svg$Svg$image,
 	_List_fromArray(
 		[
-			$elm$svg$Svg$Attributes$xlinkHref('./src/img/0.png'),
+			$elm$svg$Svg$Attributes$xlinkHref('img/0.png'),
 			$elm$svg$Svg$Attributes$x('0'),
 			$elm$svg$Svg$Attributes$y('0'),
 			$elm$svg$Svg$Attributes$width(
@@ -6500,7 +6500,7 @@ var $author$project$View$view = function (model) {
 				$elm$html$Html$audio,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$src('/src/bgm/1.mp3'),
+						$elm$html$Html$Attributes$src('bgm/1.mp3'),
 						$elm$html$Html$Attributes$autoplay(true)
 					]),
 				_List_fromArray(
