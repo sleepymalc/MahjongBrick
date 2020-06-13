@@ -6127,13 +6127,15 @@ var $author$project$Update$moveBall = F3(
 		var ball = A2(
 			$author$project$Update$collidePaddle,
 			player.paddle,
-			$author$project$Update$collideWallY(
-				$author$project$Update$collideWallX(
-					A3(
-						$author$project$Update$stayWithPaddle,
-						state,
-						player.paddle,
-						A2($author$project$Update$collideBricks, bricks, player.ball)))));
+			A3(
+				$author$project$Update$stayWithPaddle,
+				state,
+				player.paddle,
+				A2(
+					$author$project$Update$collideBricks,
+					bricks,
+					$author$project$Update$collideWallX(
+						$author$project$Update$collideWallY(player.ball)))));
 		var newBall = _Utils_update(
 			ball,
 			{
@@ -6144,6 +6146,25 @@ var $author$project$Update$moveBall = F3(
 			player,
 			{ball: newBall});
 	});
+var $author$project$Model$brickHeight = ($author$project$Model$attribute.range.y / 4) / $author$project$Model$attribute.bricksNum.y;
+var $elm$core$Basics$ge = _Utils_ge;
+var $author$project$Update$moveBricks = function (bricks) {
+	return A2(
+		$elm$core$List$any,
+		function (brick) {
+			return _Utils_cmp(brick.pos.y, ($author$project$Model$attribute.bricksNum.y - 1) * $author$project$Model$brickHeight) > -1;
+		},
+		bricks) ? bricks : A2(
+		$elm$core$List$map,
+		function (brick) {
+			return _Utils_update(
+				brick,
+				{
+					pos: A2($author$project$Model$Vector, brick.pos.x, brick.pos.y + 1)
+				});
+		},
+		bricks);
+};
 var $author$project$Update$moveFallingcard = function (player) {
 	var fallingcards = A2(
 		$elm$core$List$map,
@@ -6214,9 +6235,10 @@ var $author$project$Update$animate = F2(
 					model.bricks,
 					$author$project$Update$movePaddle(
 						$author$project$Update$catchHandcard(model.player2)))));
+		var bricks = $author$project$Update$moveBricks(newrest);
 		return _Utils_update(
 			model,
-			{bricks: newrest, player1: player1, player2: player2});
+			{bricks: bricks, player1: player1, player2: player2});
 	});
 var $elm$random$Random$Generate = function (a) {
 	return {$: 'Generate', a: a};
@@ -6324,7 +6346,6 @@ var $elm$random$Random$generate = F2(
 var $elm$core$List$concat = function (lists) {
 	return A3($elm$core$List$foldr, $elm$core$List$append, _List_Nil, lists);
 };
-var $author$project$Model$brickHeight = ($author$project$Model$attribute.range.y / 4) / $author$project$Model$attribute.bricksNum.y;
 var $author$project$Model$generateRow = F2(
 	function (suit, y) {
 		return A2(

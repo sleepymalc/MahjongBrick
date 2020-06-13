@@ -1,7 +1,7 @@
 module Update exposing (update,addVector)
 
 import Message exposing (Msg(..),MoveDirection(..),PlayerNum(..))
-import Model exposing (Model, Brick ,State(..),Vector,initBricks,brickWidth,posXList,randomList)
+import Model exposing (Model, Brick ,State(..),Vector,initBricks,brickWidth,posXList,randomList,brickHeight,posYList)
 import Random
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -93,15 +93,20 @@ animate time model =
                 |> moveBall model.state model.bricks 
                 |> moveFallingcard
                 |> addFallingcard eliminated_2
-        
+        bricks = moveBricks newrest
     in
         
         { model
             | player1=player1
             , player2=player2
-            , bricks=newrest
+            , bricks=bricks
         }
 
+moveBricks bricks =
+    if List.any (\brick-> brick.pos.y >= (Model.attribute.bricksNum.y-1)*Model.brickHeight) bricks then
+        bricks
+    else
+        List.map (\brick-> {brick| pos = Vector brick.pos.x (brick.pos.y+1)}) bricks
 
 addFallingcard eliminated player=
     {player | fallingcard = List.append player.fallingcard eliminated}
@@ -170,10 +175,10 @@ paddleSpeed paddle =
 moveBall state bricks player=
     let 
         ball= player.ball
+            |>collideWallY
+            |>collideWallX
             |>collideBricks bricks
             |>stayWithPaddle state player.paddle
-            |>collideWallX
-            |>collideWallY
             |>collidePaddle player.paddle
         newBall = {ball|pos= addVector ball.pos ball.speed,imgIndex=modBy 6 (ball.imgIndex+1)}
     in
