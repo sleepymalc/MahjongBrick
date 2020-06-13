@@ -5,7 +5,7 @@ import Svg exposing (..)
 import Svg.Attributes exposing (..)
 
 import Html exposing (Html, button, div, text)
-import Html.Attributes exposing (style,src,controls,autoplay)
+import Html.Attributes exposing (style,src,controls,autoplay,loop)
 import Html.Events exposing (on, onClick, onMouseDown, onMouseUp)
 
 import Model exposing (Model, attribute,State(..))
@@ -23,11 +23,15 @@ view model =
             renderHtml =
                 case model.state of
                     Playing->
-                        audio
+                        [audio
                             [src "bgm/1.mp3", (autoplay True)]
                             [Html.text "Your browser does not support the audio"]
+                        ,audio
+                            [src "bgm/bgm1.mp3", (autoplay True), (loop True)]
+                            [Html.text "Your browser does not support the audio"]
+                        ]
                     Paused->
-                        renderStart model
+                        [renderStart model]
     in
         div
             []
@@ -39,7 +43,7 @@ view model =
                 (transform ("translate("++(String.fromFloat (model.size.x*3/20))++" 0)")
                 :: gameUIAttribute)
                 (renderPlayer model.bricks model.player2)
-            , span[][renderHtml]
+            , span[]renderHtml
             ]
 
 
