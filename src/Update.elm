@@ -1,8 +1,8 @@
 module Update exposing (update,addVector)
 
 import Message exposing (Msg(..),MoveDirection(..),PlayerNum(..))
-import Model exposing (Model, Brick ,State(..),Vector,initBricks,brickWidth,posXList)
-
+import Model exposing (Model, Brick ,State(..),Vector,initBricks,brickWidth,posXList,randomList)
+import Random
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
@@ -26,6 +26,13 @@ update msg model =
                 , player1 = model.player1 |> setBallSpeed Model.attribute.defaultBallSpeed
                 , player2 = model.player2 |> setBallSpeed Model.attribute.defaultBallSpeed
               }
+            , Random.generate NewBricks Model.randomList
+            )
+
+        NewBricks values->
+            ( { model
+                | bricks = Model.initBricks values
+            }
             , Cmd.none
             )
 

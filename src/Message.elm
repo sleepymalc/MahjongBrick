@@ -9,3 +9,4 @@ type Msg
     | Noop
     | GetViewport Viewport
     | Start
+    | NewBricks (List Int)

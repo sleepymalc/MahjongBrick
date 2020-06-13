@@ -75,7 +75,7 @@ renderBall ball =
 
 renderLogo =
     Svg.image
-        [  xlinkHref "img/0.png"
+        [  xlinkHref "img/logo.png"
         , x "0"
         , y "0"
         , width (String.fromFloat Model.attribute.range.x)
@@ -119,7 +119,7 @@ renderFrame =
     []
 renderBrick brick =
     Svg.image
-        [  xlinkHref "img/02_46.png"
+        [  xlinkHref ("img/suit/"++(String.fromInt (brick.suit//4+1))++".png")
         , width (String.fromFloat brick.size.x)--(String.fromFloat 40.2)
         , height (String.fromFloat brick.size.y)--(String.fromFloat 52.8)
         , x (String.fromFloat brick.pos.x)

@@ -11,6 +11,7 @@ module Model exposing
     , brickHeight
     , posXList
     , posYList
+    , randomList
     )
 
 import Message exposing (Msg(..),MoveDirection(..))
@@ -22,6 +23,8 @@ import Svg exposing (a)
 import Json.Encode exposing (int)
 import Random
 import Html.Attributes exposing (value)
+import Dict exposing (values)
+import Json.Decode exposing (Value)
 type alias Vector a=
     { x:a
     , y:a
@@ -83,7 +86,8 @@ type alias Model =
 attribute =
     { playersNum = 2
     , range = Vector 600 800
-    , bricksNum = Vector 13 3--need change?
+    , bricksNum = Vector 12 3--need change?
+    , totalBricksNum = 144
     , defaultBallSpeed =Vector 3 -2
     , handcardPosY = 600
     }
@@ -93,7 +97,7 @@ init : () -> (Model, Cmd Msg)
 init _= 
     ({ player1 = initPlayer
     , player2 = initPlayer
-    , bricks = initBricks
+    , bricks = []
     , state = Paused--to be update
     , size = Vector 0 0
     --,{ background = { width=widthRange, height= heightRange, pos={x=0,y=0}}
@@ -108,17 +112,30 @@ brickHeight = attribute.range.y/4/attribute.bricksNum.y
 posXList = 
     (List.range 0 (attribute.bricksNum.x-1)
         |> List.map (\x-> ((toFloat x))*brickWidth))
-posYList = List.range 0 (attribute.bricksNum.y-1)
-            |> List.map (\x-> ((toFloat x))*brickHeight)
+posYList = List.range (-attribute.bricksNum.y+1) (attribute.totalBricksNum//attribute.bricksNum.x-attribute.bricksNum.y)
+            |> List.map (\x-> -((toFloat x))*brickHeight)
 
 
-
-initBricks: List Brick
-initBricks = 
+--randomList: Random.Generator (List Int)
+randomList =
+    Random.list attribute.totalBricksNum (Random.int 0 100000)
+    
+--initBricks: List Int->List Brick
+initBricks values= 
     let
         bricks=List.map (generateRow 1) posYList
+                |> List.concat
+                |> List.map2 
+                    (\value brick ->
+                        {brick|suit=value}
+                    ) values 
+                |> List.sortBy .suit
+                |> List.indexedMap 
+                    (\index brick->
+                        {brick|suit=index}
+                    )
     in
-        List.concat bricks
+        bricks
     
 
 initPlayer : Player
