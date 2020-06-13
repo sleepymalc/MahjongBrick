@@ -6076,7 +6076,10 @@ var $author$project$Update$changeBallSpeed = F2(
 		return _Utils_update(
 			ball,
 			{
-				speed: A2($author$project$Update$changeDirection, $author$project$Update$Y, ball.speed)
+				speed: {
+					x: A2($author$project$Update$changeDirection, $author$project$Update$Y, ball.speed).x + paddle.speed,
+					y: A2($author$project$Update$changeDirection, $author$project$Update$Y, ball.speed).y
+				}
 			});
 	});
 var $author$project$Update$collidePaddle = F2(
