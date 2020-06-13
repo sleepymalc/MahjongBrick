@@ -6077,7 +6077,7 @@ var $author$project$Update$changeBallSpeed = F2(
 			ball,
 			{
 				speed: {
-					x: A2($author$project$Update$changeDirection, $author$project$Update$Y, ball.speed).x + paddle.speed,
+					x: A2($author$project$Update$changeDirection, $author$project$Update$Y, ball.speed).x + (0.5 * paddle.speed),
 					y: A2($author$project$Update$changeDirection, $author$project$Update$Y, ball.speed).y
 				}
 			});

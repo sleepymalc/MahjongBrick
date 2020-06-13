@@ -230,7 +230,7 @@ collideWallY ball=
         {ball|speed = changeDirection Y ball.speed }
 
 changeBallSpeed paddle ball=
-    {ball|speed = { x=(changeDirection Y ball.speed).x+(paddle.speed) ,y=(changeDirection Y ball.speed).y}}
+    {ball|speed = { x=(changeDirection Y ball.speed).x+(0.5*paddle.speed) ,y=(changeDirection Y ball.speed).y}}
 
 collidePaddle paddle ball =
     if ((ball.pos.x + ball.speed.x) 
