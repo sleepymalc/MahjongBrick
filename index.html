@@ -6076,7 +6076,14 @@ var $author$project$Update$changeBallSpeed = F2(
 		return _Utils_update(
 			ball,
 			{
+<<<<<<< .merge_file_FWLTox
 				speed: A2($author$project$Update$changeDirection, $author$project$Update$Y, ball.speed)
+=======
+				speed: {
+					x: A2($author$project$Update$changeDirection, $author$project$Update$Y, ball.speed).x + paddle.speed,
+					y: A2($author$project$Update$changeDirection, $author$project$Update$Y, ball.speed).y
+				}
+>>>>>>> .merge_file_AOXXSB
 			});
 	});
 var $author$project$Update$collidePaddle = F2(
