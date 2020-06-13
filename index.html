@@ -6274,6 +6274,7 @@ var $elm$html$Html$Attributes$autoplay = $elm$html$Html$Attributes$boolProperty(
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$core$String$fromFloat = _String_fromNumber;
 var $elm$svg$Svg$Attributes$height = _VirtualDom_attribute('height');
+var $elm$html$Html$Attributes$loop = $elm$html$Html$Attributes$boolProperty('loop');
 var $elm$svg$Svg$trustedNode = _VirtualDom_nodeNS('http://www.w3.org/2000/svg');
 var $elm$svg$Svg$image = $elm$svg$Svg$trustedNode('image');
 var $elm$svg$Svg$Attributes$width = _VirtualDom_attribute('width');
@@ -6496,19 +6497,37 @@ var $author$project$View$view = function (model) {
 	var renderHtml = function () {
 		var _v0 = model.state;
 		if (_v0.$ === 'Playing') {
-			return A2(
-				$elm$html$Html$audio,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$src('bgm/1.mp3'),
-						$elm$html$Html$Attributes$autoplay(true)
-					]),
-				_List_fromArray(
-					[
-						$elm$html$Html$text('Your browser does not support the audio')
-					]));
+			return _List_fromArray(
+				[
+					A2(
+					$elm$html$Html$audio,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$src('bgm/1.mp3'),
+							$elm$html$Html$Attributes$autoplay(true)
+						]),
+					_List_fromArray(
+						[
+							$elm$html$Html$text('Your browser does not support the audio')
+						])),
+					A2(
+					$elm$html$Html$audio,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$src('bgm/bgm1.mp3'),
+							$elm$html$Html$Attributes$autoplay(true),
+							$elm$html$Html$Attributes$loop(true)
+						]),
+					_List_fromArray(
+						[
+							$elm$html$Html$text('Your browser does not support the audio')
+						]))
+				]);
 		} else {
-			return $author$project$View$renderStart(model);
+			return _List_fromArray(
+				[
+					$author$project$View$renderStart(model)
+				]);
 		}
 	}();
 	var gameUIAttribute = _List_fromArray(
@@ -6540,11 +6559,7 @@ var $author$project$View$view = function (model) {
 						'translate(' + ($elm$core$String$fromFloat((model.size.x * 3) / 20) + ' 0)')),
 					gameUIAttribute),
 				A2($author$project$View$renderPlayer, model.bricks, model.player2)),
-				A2(
-				$elm$html$Html$span,
-				_List_Nil,
-				_List_fromArray(
-					[renderHtml]))
+				A2($elm$html$Html$span, _List_Nil, renderHtml)
 			]));
 };
 var $author$project$Breakout$main = $elm$browser$Browser$element(
