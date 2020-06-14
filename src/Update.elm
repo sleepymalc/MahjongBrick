@@ -330,10 +330,6 @@ catchHandcard player =
             |>List.map2 
                 (\posx card->
                     {card | 
-<<<<<<< HEAD
-                        pos=Vector (posx+ handcardSetOff(List.append handcard player.handcard)) Model.attribute.handcardPosY}
-                    ) (Model.posXList 13)
-=======
                         pos=Vector (posx*handcardSizeRate+ handcardSetOff newPlayer.handcard) 0}
                     ) (Model.posXList 13) 
             |>List.indexedMap 
@@ -342,7 +338,6 @@ catchHandcard player =
                         {card|pos=Vector card.pos.x (Model.attribute.handcardPosY-10) }
                     else
                         {card|pos=Vector card.pos.x Model.attribute.handcardPosY })
->>>>>>> 1033a35e099c39746c00bc2dde9620524a299e43
         newFallingcard=List.filter (\card->card.pos.y<(Model.attribute.range.y*2/3+25)) fallingcard
     in
         { newPlayer
