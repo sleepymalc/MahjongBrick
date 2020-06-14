@@ -1,19 +1,4 @@
-module Model exposing
-    ( Model
-    , Vector
-    , Brick
-    , State(..)
-    , generateRow
-    , init
-    , initBricks
-    , attribute
-    , brickWidth
-    , brickHeight
-    , posXList
-    , posYList
-    , randomList
-    )
-
+module Model exposing(..)
 import Message exposing (Msg(..),MoveDirection(..),PlayerNum(..))
 import Browser.Dom exposing (getViewport)
 import Task
@@ -71,12 +56,15 @@ type alias Background =
     }
 
 type alias Player =
-    {   paddle: Paddle
-       ,ball: Ball
-       ,handcard: List Brick
-       ,chosen: Int
-       ,skill: List Brick
-       ,fallingcard: List Brick 
+    { paddle: Paddle
+    , ball: Ball
+    , handcard: List Brick
+    , chosen: Int
+    , skill: List Brick
+    , fallingcard: List Brick 
+    , chosenCard: Int 
+    , moveHandcard: Int
+    , droppedcard: List Brick 
     }
 type alias Model =
     { player1: Player
@@ -168,6 +156,9 @@ initPlayer =
     , chosen = 0
     , skill = []
     , fallingcard = []
+    , chosenCard = 0
+    , moveHandcard = 0
+    , droppedcard = []
     }
     
 initPaddle : Paddle
