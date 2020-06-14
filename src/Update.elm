@@ -97,11 +97,11 @@ animate time model =
 
         (eliminated_1, rest)= 
             List.partition 
-                (\brick-> (brick |> collideWith model.player1.ball)) 
+                (\brick-> (brick |> Tuple.first(collideWith model.player1.ball) && brick.count==0)) 
                 model.bricks
         (eliminated_2, newrest)=
             List.partition
-                (\brick-> (brick |> collideWith model.player2.ball))
+                (\brick-> (brick |> Tuple.first(collideWith model.player2.ball) && brick.count==0))
                 rest
 
         audioList = 
@@ -147,10 +147,8 @@ animate time model =
             , audioList=audioList
             , state=state
         }
-<<<<<<< HEAD
---formPongs bricks = 
-=======
 
+--formPongs bricks = 
 win player =
     case List.head player.droppedcard of
         Nothing ->
@@ -226,7 +224,6 @@ dropBrick suit bricks =
     in
         List.sortBy .suit (List.append rest (List.drop 1 sameBricks))
         
->>>>>>> 1033a35e099c39746c00bc2dde9620524a299e43
 
 
 --formKong bricks = 
@@ -249,8 +246,18 @@ addFallingcard eliminated player=
 --Might update: not judged by virtually real size of the brick 
 --collideWith: Ball->Brick->Bool--animate helper
 collideWith ball brick =
-    ((ball.pos.x+ball.speed.x)|> inRange (brick.pos.x-ball.size.x) (brick.pos.x+brick.size.x)) 
-     &&((ball.pos.y+ball.speed.y)|>inRange (brick.pos.y-ball.size.y) (brick.pos.y+brick.size.y))
+    let
+        boolX=(ball.pos.x+ball.speed.x)|> inRange (brick.pos.x-ball.size.x) (brick.pos.x+brick.size.x)
+        boolY=(ball.pos.y+ball.speed.y)|>inRange (brick.pos.y-ball.size.y) (brick.pos.y+brick.size.y)
+    in
+    if (boolX) then
+        (True,{brick|count=brick.count-1})
+    
+    else if (boolY) then
+        (True,{brick|count=brick.count-2})
+    else 
+        (False,brick)
+
 
 
 collideWithPaddle paddle brick =
@@ -260,6 +267,9 @@ collideWithPaddle paddle brick =
 
 handcardSetOff handcard=
     (Model.attribute.range.x-(toFloat(List.length handcard))*Model.brickWidth)/2
+
+handcardSizeRate =
+    (toFloat Model.attribute.bricksNum.x)/(toFloat Model.attribute.handcardNum)
 
 
 swapSuit: Brick -> Brick -> (Brick,Brick)
@@ -315,11 +325,7 @@ catchHandcard player =
             |>List.map2 
                 (\posx card->
                     {card | 
-<<<<<<< HEAD
-                        pos=Vector (posx+ handcardSetOff(List.append handcard player.handcard)) Model.attribute.handcardPosY}
-                    ) (Model.posXList 13)
-=======
-                        pos=Vector (posx*handcardSizeRate+ handcardSetOff newPlayer.handcard) 0}
+                        pos=Vector ((posx*(handcardSizeRate))+ handcardSetOff newPlayer.handcard) 0}
                     ) (Model.posXList 13) 
             |>List.indexedMap 
                 (\index card->
@@ -327,7 +333,6 @@ catchHandcard player =
                         {card|pos=Vector card.pos.x (Model.attribute.handcardPosY-10) }
                     else
                         {card|pos=Vector card.pos.x Model.attribute.handcardPosY })
->>>>>>> 1033a35e099c39746c00bc2dde9620524a299e43
         newFallingcard=List.filter (\card->card.pos.y<(Model.attribute.range.y*2/3+25)) fallingcard
     in
         { newPlayer
