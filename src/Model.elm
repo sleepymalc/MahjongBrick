@@ -80,16 +80,17 @@ type alias Model =
     , bricks: List Brick
     , state: State
     , size: Size
+    , audioList: List String
     --background : Background
     }
 
 attribute =
     { playersNum = 2
     , range = Vector 600 800
-    , bricksNum = Vector 12 2--need change?
+    , bricksNum = Vector 12 3--need change?
     , totalBricksNum = 144
     , defaultBallSpeed =Vector 3 -2
-    , handcardPosY = 600
+    , handcardPosY = 650
     }
 
     
@@ -100,6 +101,7 @@ init _=
     , bricks = []
     , state = Paused--to be update
     , size = Vector 0 0
+    , audioList = []
     --,{ background = { width=widthRange, height= heightRange, pos={x=0,y=0}}
     },Task.perform GetViewport getViewport)
 

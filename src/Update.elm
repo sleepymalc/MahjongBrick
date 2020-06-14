@@ -80,17 +80,26 @@ animate time model =
                 (\brick-> (brick |> collideWith model.player2.ball))
                 rest
 
+        audioList = 
+            if List.isEmpty (List.append eliminated_2 eliminated_1)==False then
+                "bgm/dice.wav"::model.audioList
+            else 
+                model.audioList
+
+        vaildBricks = model.bricks
+            |> List.filter (\brick-> brick.pos.y>=0)
+
         player1 = model.player1
                 |> catchHandcard
                 |> movePaddle
-                |> moveBall model.state model.bricks 
+                |> moveBall model.state vaildBricks
                 |> moveFallingcard
                 |> addFallingcard eliminated_1
 
         player2 = model.player2
                 |> catchHandcard
                 |> movePaddle
-                |> moveBall model.state model.bricks 
+                |> moveBall model.state vaildBricks
                 |> moveFallingcard
                 |> addFallingcard eliminated_2
         bricks = moveBricks newrest
@@ -102,6 +111,7 @@ animate time model =
             | player1=player1
             , player2=player2
             , bricks=bricks
+            , audioList=audioList
         }
 --formPongs bricks = 
 
@@ -109,6 +119,8 @@ animate time model =
 --formKong bricks = 
 
 --formChow bricks = 
+
+
 
 moveBricks bricks =
     if List.any (\brick-> brick.pos.y >= (Model.attribute.bricksNum.y-1)*Model.brickHeight) bricks then
