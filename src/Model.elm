@@ -86,7 +86,7 @@ type alias Model =
 attribute =
     { playersNum = 2
     , range = Vector 600 800
-    , bricksNum = Vector 12 3--need change?
+    , bricksNum = Vector 12 2--need change?
     , totalBricksNum = 144
     , defaultBallSpeed =Vector 3 -2
     , handcardPosY = 600
@@ -105,12 +105,12 @@ init _=
 
 
 generateRow  suit y =
-    List.map (\x-> {suit=suit, size = Vector brickWidth brickHeight, pos = Vector x y }) posXList
+    List.map (\x-> {suit=suit, size = Vector brickWidth brickHeight, pos = Vector x y }) (posXList attribute.bricksNum.x)
 
 brickWidth = attribute.range.x/attribute.bricksNum.x
 brickHeight = attribute.range.y/4/attribute.bricksNum.y
-posXList = 
-    (List.range 0 (attribute.bricksNum.x-1)
+posXList n= 
+    (List.range 0 (n-1)
         |> List.map (\x-> ((toFloat x))*brickWidth))
 posYList = List.range (-attribute.bricksNum.y+1) (attribute.totalBricksNum//attribute.bricksNum.x-attribute.bricksNum.y)
             |> List.map (\x-> -((toFloat x))*brickHeight)

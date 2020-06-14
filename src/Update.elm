@@ -94,6 +94,8 @@ animate time model =
                 |> moveFallingcard
                 |> addFallingcard eliminated_2
         bricks = moveBricks newrest
+
+
     in
         
         { model
@@ -101,6 +103,12 @@ animate time model =
             , player2=player2
             , bricks=bricks
         }
+--formPongs bricks = 
+
+
+--formKong bricks = 
+
+--formChow bricks = 
 
 moveBricks bricks =
     if List.any (\brick-> brick.pos.y >= (Model.attribute.bricksNum.y-1)*Model.brickHeight) bricks then
@@ -124,8 +132,10 @@ collideWithPaddle paddle brick =
     (((paddle.pos.y)|>inRange (brick.pos.y+brick.size.y) (brick.pos.y+brick.size.y+paddle.size.y+1))
   &&((paddle.pos.x+paddle.speed+paddle.size.x) > (brick.pos.x))
   &&((paddle.pos.x+paddle.speed)< (brick.pos.x+brick.size.x)))
+
 handcardSetOff handcard=
     (Model.attribute.range.x-(toFloat(List.length handcard))*Model.brickWidth)/2
+
 catchHandcard player =
     let
         (handcard,fallingcard)=
@@ -140,7 +150,7 @@ catchHandcard player =
                 (\posx card->
                     {card | 
                         pos=Vector (posx+ handcardSetOff(List.append handcard player.handcard)) Model.attribute.handcardPosY}
-                    ) Model.posXList
+                    ) (Model.posXList 13)
         newFallingcard=List.filter (\card->card.pos.y<(Model.attribute.range.y*2/3+25)) fallingcard
     in
         {player|fallingcard=newFallingcard,handcard=newHandcard}
