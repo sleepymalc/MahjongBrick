@@ -274,7 +274,7 @@ collideWithPaddle paddle brick =
   &&((paddle.pos.x+paddle.speed)< (brick.pos.x+brick.size.x)))
 
 handcardSetOff handcard=
-    (Model.attribute.range.x-(toFloat(List.length handcard))*Model.brickWidth)/2
+    (Model.attribute.range.x-(toFloat(List.length handcard))*Model.brickWidth*handcardSizeRate)/2
 
 
 swapSuit: Brick -> Brick -> (Brick,Brick)
@@ -315,6 +315,8 @@ dropCard handcard player  =
         , handcard = newHandcard
         }
 
+handcardSizeRate = Model.attribute.bricksNum.x/Model.attribute.handcardNum
+
 catchHandcard: Player -> Player
 catchHandcard player =
     let
@@ -330,8 +332,8 @@ catchHandcard player =
             |>List.map2 
                 (\posx card->
                     {card | 
-                        pos=Vector (posx*handcardSizeRate+ handcardSetOff newPlayer.handcard) 0}
-                    ) (Model.posXList 13) 
+                        pos=Vector (posx* (handcardSizeRate)+ (handcardSetOff newPlayer.handcard)) 0
+                    }) (Model.posXList 13) 
             |>List.indexedMap 
                 (\index card->
                     if index == player.chosenCard then
