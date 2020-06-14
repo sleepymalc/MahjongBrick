@@ -55,6 +55,7 @@ type alias Ball =
     , pos: Pos
     , speed: Speed
     , imgIndex: Int
+    , punish: Bool
     }
 
 type alias Paddle =
@@ -72,6 +73,7 @@ type alias Player =
     {   paddle: Paddle
        ,ball: Ball
        ,handcard: List Brick
+       ,chosen: Int
        ,skill: List Brick
        ,fallingcard: List Brick 
     }
@@ -138,6 +140,7 @@ initBricks values model=
                     (\index brick->
                         {brick|suit=index}
                     )
+<<<<<<< HEAD
                 |> List.sortBy (\brick ->  brick.pos.y * 10000+ brick.pos.x)
 
         (player1, rest) = deal bricks model.player1
@@ -156,12 +159,20 @@ deal bricks player =
     in 
         ({player|handcard = handcard}, newBricks)
     
+=======
+
+    in
+        bricks
+        
+  
+>>>>>>> 9fb0a738ea601f7680a6e63c2500e56c8a5cb6db
 
 initPlayer : Player
 initPlayer = 
     { paddle = initPaddle
     , ball = initBall
     , handcard = []
+    , chosen = 0
     , skill = []
     , fallingcard = []
     }
@@ -178,5 +189,6 @@ initBall =
     { size = {x = 20, y = 20}
     , pos = Vector (attribute.range.x/2-30/2) (attribute.range.y*2/3) 
     , speed = attribute.defaultBallSpeed
+    , punish = False
     , imgIndex=0
     }

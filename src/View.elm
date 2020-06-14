@@ -62,9 +62,9 @@ renderPlayer bricks player =
     :: renderFrame
     :: renderLogo
     :: renderPaddle player.paddle
-    :: renderBall  player.ball
-    :: renderBricks (List.append (List.append bricks player.fallingcard) player.handcard)
-
+    :: renderBall  player.ball    
+    :: renderBricks (List.append player.fallingcard player.handcard)
+    ++ renderunBricks (bricks)
 
 renderBall ball =
     let 
@@ -127,6 +127,24 @@ renderFrame =
         , height (String.fromFloat Model.attribute.range.y)
         ]
     []
+renderunBrick brick =
+    Svg.image
+        [  xlinkHref ("img/suit/43.png")
+        , width (String.fromFloat brick.size.x)--(String.fromFloat 40.2)
+        , height (String.fromFloat brick.size.y)--(String.fromFloat 52.8)
+        , x (String.fromFloat brick.pos.x)
+        , y (String.fromFloat brick.pos.y)
+        , rx "1"
+        , ry "1"
+        ]
+    []
+
+renderunBricks bricks=
+    bricks
+    |> List.filter(\brick->brick.pos.y>=0)
+    |> List.map renderunBrick
+
+
 renderBrick brick =
     Svg.image
         [  xlinkHref ("img/suit/"++(String.fromInt (brick.suit//4+1))++".png")
