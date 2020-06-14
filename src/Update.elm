@@ -186,15 +186,17 @@ formPongs bricks =
             Nothing -> 
                 False
             Just brick ->
-                (List.member brick.suit (List.map .suit brick1)) && (List.member brick.suit (List.map .suit brick1))
+                (List.member ((brick.suit-1)//4+1) (List.map (\card-> ((card.suit-1)//4+1)) brick1))
+                && (List.member ((brick.suit-1)//4+1) (List.map (\card-> ((card.suit-1)//4+1)) brick2))
+                
 
 vaildKong suit =
-    ( suit <=27 ) && ( modBy 9 suit /=0 ) && ( modBy 9 suit /=8 )
+    ( ((suit-1)//4+1) <=27 ) && ( modBy 9 ((suit-1)//4+1) /=0 ) && ( modBy 9 ((suit-1)//4+1) /=8 )
 
 formKongHelper brick bricks =
     if vaildKong brick.suit then
-        (List.member (brick.suit+1) (List.map .suit bricks))
-        && (List.member (brick.suit+2) (List.map .suit bricks))
+        (List.member (brick.suit+1) (List.map (\card-> ((card.suit-1)//4+1)) bricks)
+        && (List.member (brick.suit+2) (List.map (\card-> ((card.suit-1)//4+1)) bricks)
     else 
         False
 
@@ -220,11 +222,11 @@ formChow bricks =
             Nothing -> 
                 False
             Just brick ->
-                List.member brick.suit (List.map .suit brick1)
+                List.member ((brick.suit-1)//4+1) (List.map (\card-> ((card.suit-1)//4+1)) brick1)
 
 dropBrick suit bricks =
     let
-        ( sameBricks,rest ) = List.partition (\brick -> brick.suit == suit) bricks
+        ( sameBricks,rest ) = List.partition (\brick -> ((brick.suit-1)//4+1) == suit) bricks
     in
         (List.append rest (List.drop 1 sameBricks))
         
@@ -236,7 +238,7 @@ dropKong bricks =
             Nothing -> 
                 0
             Just brick ->
-                brick.suit
+                ((brick.suit-1)//4+1)
     in
         bricks
         |> dropBrick suit1
@@ -250,9 +252,15 @@ formHu bricks =
     if List.length bricks == 0 then
         True
     else
-        ( (formPongs bricks) && (formHu (List.drop 3 bricks)) )
-        || ( (formKong bricks) && (formHu (dropKong bricks)) )
-        || ( (modBy 3 (List.length bricks) == 2)&&(formChow bricks)&&(formHu (List.drop 2 bricks)) )
+        let 
+            pongs = (formPongs bricks) && (formHu (List.drop 3 bricks)) 
+            kong =  (formKong bricks) && (formHu (dropKong bricks)) 
+            chow = if modBy 3 (List.length bricks) == 2 then
+                        (formChow bricks)&&(formHu (List.drop 2 bricks))
+                    else 
+                        False
+        in
+            pongs||kong||chow
 
 
 moveBricks bricks =
@@ -289,7 +297,7 @@ collideWithPaddle paddle brick =
   &&((paddle.pos.x+paddle.speed)< (brick.pos.x+brick.size.x)))
 
 handcardSetOff handcard=
-    (Model.attribute.range.x-(toFloat(List.length handcard))*Model.brickWidth)/2
+    (Model.attribute.range.x-(toFloat(List.length handcard))*Model.brickWidth*handcardSizeRate)/2
 
 handcardSizeRate =
     (toFloat Model.attribute.bricksNum.x)/(toFloat Model.attribute.handcardNum)
