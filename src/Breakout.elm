@@ -36,6 +36,8 @@ subscriptions model =
         , onResize Resize
         ]
 
+
+
 key : Bool -> Int -> Msg
 key on keycode =
     case keycode of
@@ -47,10 +49,10 @@ key on keycode =
             Move Player1 Right on
 
         87 ->
-            Move Player1 Up on
+            MoveHandcard Player1 Left on
 
         83 ->
-            Move Player1 Down on
+            MoveHandcard Player1 Right on
 
     --Player2
         37 ->
@@ -60,10 +62,10 @@ key on keycode =
             Move Player2 Right on
 
         38 ->
-            Move Player2 Up on
+            MoveHandcard Player2 Left on
 
         40 ->
-            Move Player2 Down on
+            MoveHandcard Player2 Right on
 
 
         _ ->

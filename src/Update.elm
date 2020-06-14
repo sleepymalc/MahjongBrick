@@ -1,7 +1,7 @@
 module Update exposing (update,addVector)
 
 import Message exposing (Msg(..),MoveDirection(..),PlayerNum(..))
-import Model exposing (Model, Brick ,State(..),Vector,initBricks,brickWidth,posXList,randomList,brickHeight,posYList)
+import Model exposing (..)
 import Random
 import List exposing (member)
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -42,21 +42,38 @@ update msg model =
                                 -1
                             Right ->
                                 1    
-                            Up ->
-                                0
-                            Down ->
-                                0
-                speed=case on of
-                            True ->
-                                moveX*8
-                            False ->
-                                0
+
+                speed = if on then
+                            moveX*8
+                        else
+                            0
+ 
             in 
                 case player of
                     Player1 ->
                         ({model|player1=model.player1 |> setPaddleSpeed speed },Cmd.none)
                     Player2 ->
                         ({model|player2=model.player2 |> setPaddleSpeed speed },Cmd.none)
+
+        MoveHandcard player moveDirection on->
+            let
+                moveX=case moveDirection of
+                            Left ->
+                                -1
+                            Right ->
+                                1    
+                speed = if on then
+                            moveX
+                        else
+                            0
+
+            in 
+                case player of
+                    Player1 ->
+                        ({model|player1=model.player1 |> moveChosencard speed },Cmd.none)
+                    Player2 ->
+                        ({model|player2=model.player2 |> moveChosencard speed },Cmd.none)
+
 
         Tick time ->
                 case model.state of
@@ -97,6 +114,7 @@ animate time model =
             |> List.filter (\brick-> brick.pos.y>=0)
 
         player1 = model.player1
+                |> moveHandcard
                 |> catchHandcard
                 |> movePaddle
                 |> moveBall model.state vaildBricks
@@ -104,13 +122,21 @@ animate time model =
                 |> addFallingcard eliminated_1
 
         player2 = model.player2
+                |> moveHandcard
                 |> catchHandcard
                 |> movePaddle
                 |> moveBall model.state vaildBricks
                 |> moveFallingcard
                 |> addFallingcard eliminated_2
+                
         bricks = moveBricks newrest
 
+        state = if win player1 then
+                Win Player1
+            else if win player2 then
+                Win Player2
+            else
+                model.state
 
     in
         
@@ -119,7 +145,24 @@ animate time model =
             , player2=player2
             , bricks=bricks
             , audioList=audioList
+            , state=state
         }
+
+win player =
+    case List.head player.droppedcard of
+        Nothing ->
+            False
+        Just card ->
+            let
+                handcard = (card::player.handcard)
+                    |> List.sortBy .suit
+            in
+                formHu handcard
+
+moveHandcard player =
+    { player
+    | chosenCard = modBy Model.attribute.handcardNum (player.chosenCard + player.moveHandcard)}
+
 formPongs bricks = 
     let
         pongs = bricks
@@ -178,7 +221,8 @@ dropBrick suit bricks =
     let
         ( sameBricks,rest ) = List.partition (\brick -> brick.suit == suit) bricks
     in
-        List.append rest (List.drop 1 sameBricks)
+        List.sortBy .suit (List.append rest (List.drop 1 sameBricks))
+        
 
 
 dropKong bricks =
@@ -234,24 +278,73 @@ handcardSetOff handcard=
 handcardSizeRate =
     (toFloat Model.attribute.bricksNum.x) /(toFloat Model.attribute.handcardNum)
 
+
+swapSuit: Brick -> Brick -> (Brick,Brick)
+swapSuit card1 card2=
+    ( {card1|suit = card2.suit}
+    , {card2|suit = card1.suit}
+    )
+
+chooseCard: Player -> Maybe Brick
+chooseCard player= player.handcard
+    |> List.drop (player.chosenCard) 
+    |> List.head
+
+
+droppingCard: Player -> Brick -> Brick
+droppingCard player handcard= case (chooseCard player) of
+            Nothing ->
+                handcard
+            Just card ->
+                card
+
+dropCard: Brick -> Player -> Player
+dropCard handcard player  =
+    let
+        ( added,dropped ) = swapSuit (droppingCard player handcard) handcard
+        droppedcard = dropped :: player.droppedcard
+
+        newHandcard = player.handcard
+            |>List.map 
+                (\card->
+                    if card.pos.x == added.pos.x then
+                        { card|suit = added.suit}
+                    else card
+                )
+    in
+        { player
+        | droppedcard = droppedcard
+        , handcard = newHandcard
+        }
+
+catchHandcard: Player -> Player
 catchHandcard player =
     let
-        (handcard,fallingcard)=
+        (handcards,fallingcard)=
             List.partition
                     (\brick-> (brick |> collideWithPaddle player.paddle))
                     player.fallingcard 
-        newHandcard=handcard
-            |>List.append player.handcard
+        newPlayer = List.foldl dropCard player handcards
+
+
+        newHandcard = newPlayer.handcard
             |>List.sortBy .suit 
-            |>List.map (\card->{card|pos=Vector card.pos.x Model.attribute.handcardPosY })
             |>List.map2 
                 (\posx card->
                     {card | 
-                        pos=Vector (posx*handcardSizeRate+ handcardSetOff(List.append handcard player.handcard)) Model.attribute.handcardPosY}
-                    ) (Model.posXList 13)
+                        pos=Vector (posx*handcardSizeRate+ handcardSetOff newPlayer.handcard) 0}
+                    ) (Model.posXList 13) 
+            |>List.indexedMap 
+                (\index card->
+                    if index == player.chosenCard then
+                        {card|pos=Vector card.pos.x (Model.attribute.handcardPosY-10) }
+                    else
+                        {card|pos=Vector card.pos.x Model.attribute.handcardPosY })
         newFallingcard=List.filter (\card->card.pos.y<(Model.attribute.range.y*2/3+25)) fallingcard
     in
-        {player|fallingcard=newFallingcard,handcard=newHandcard}
+        { newPlayer
+        | fallingcard = newFallingcard
+        , handcard = newHandcard}
    -- ((bricks.pos.y+bricks.size.y)>paddle.pos.y&&(bricks.pos.x |>inRange paddle.pos.x paddle.pos.x-))
      
 
@@ -399,3 +492,6 @@ setBallSpeed speed player =
         newBall = {ball| speed=speed}
     in
         {player|ball=newBall}
+
+moveChosencard x player =
+    {player|chosenCard = player.chosenCard+x}
