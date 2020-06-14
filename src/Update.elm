@@ -195,8 +195,8 @@ vaildKong suit =
 
 formKongHelper brick bricks =
     if vaildKong brick.suit then
-        (List.member (brick.suit+1) (List.map (\card-> ((card.suit-1)//4+1)) bricks)
-        && (List.member (brick.suit+2) (List.map (\card-> ((card.suit-1)//4+1)) bricks)
+        (List.member (((brick.suit-1)//4+1)+1) (List.map (\card-> ((card.suit-1)//4+1)) bricks))
+        && (List.member (((brick.suit-1)//4+1)+2) (List.map (\card-> ((card.suit-1)//4+1)) bricks))
     else 
         False
 
