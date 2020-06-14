@@ -14,7 +14,7 @@ module Model exposing
     , randomList
     )
 
-import Message exposing (Msg(..),MoveDirection(..))
+import Message exposing (Msg(..),MoveDirection(..),PlayerNum(..))
 import Browser.Dom exposing (getViewport)
 import Task
 import Svg.Attributes exposing (speed)
@@ -48,6 +48,7 @@ type alias Brick =
 type State
     = Paused
     | Playing
+    | Win PlayerNum
 
 type alias Ball =
     { size: Size
@@ -93,6 +94,7 @@ attribute =
     , totalBricksNum = 144
     , defaultBallSpeed =Vector 3 -2
     , handcardPosY = 650
+    , handcardNum = 13
     }
 
     
@@ -125,9 +127,9 @@ randomList =
     Random.list attribute.totalBricksNum (Random.int 0 100000)
     
 --initBricks: List Int->List Brick
-initBricks values= 
+initBricks values model= 
     let
-        bricks=List.map (generateRow 1) posYList
+        bricks = List.map (generateRow 1) posYList
                 |> List.concat
                 |> List.map2 
                     (\value brick ->
@@ -138,11 +140,24 @@ initBricks values=
                     (\index brick->
                         {brick|suit=index}
                     )
+                |> List.sortBy (\brick ->  brick.pos.y * 10000+ brick.pos.x)
 
+        (player1, rest) = deal bricks model.player1
+        (player2, newrest) = deal rest model.player2
     in
-        bricks
-        
-  
+        { model
+        | player1 = player1
+        , player2 = player2
+        , bricks = newrest}
+
+
+deal bricks player =
+    let 
+        handcard = List.take attribute.handcardNum bricks
+        newBricks = List.drop attribute.handcardNum bricks
+    in 
+        ({player|handcard = handcard}, newBricks)
+    
 
 initPlayer : Player
 initPlayer = 

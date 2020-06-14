@@ -10,3 +10,4 @@ type Msg
     | GetViewport Viewport
     | Start
     | NewBricks (List Int)
+    
