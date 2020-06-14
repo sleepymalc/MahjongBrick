@@ -181,7 +181,7 @@ formPongs bricks =
             Nothing -> 
                 False
             Just brick ->
-                (List.member brick brick1) && (List.member brick brick2)
+                (List.member brick.suit (List.map .suit brick1)) && (List.member brick.suit (List.map .suit brick1))
 
 vaildKong suit =
     ( suit <=27 ) && ( modBy 9 suit /=0 ) && ( modBy 9 suit /=8 )
@@ -215,13 +215,13 @@ formChow bricks =
             Nothing -> 
                 False
             Just brick ->
-                List.member brick brick1
+                List.member brick.suit (List.map .suit brick1)
 
 dropBrick suit bricks =
     let
         ( sameBricks,rest ) = List.partition (\brick -> brick.suit == suit) bricks
     in
-        List.sortBy .suit (List.append rest (List.drop 1 sameBricks))
+        (List.append rest (List.drop 1 sameBricks))
         
 
 
@@ -237,6 +237,7 @@ dropKong bricks =
         |> dropBrick suit1
         |> dropBrick (suit1 + 1)
         |> dropBrick (suit1 + 2)
+        |> List.sortBy .suit
 
 
 formHu bricks =
@@ -244,8 +245,7 @@ formHu bricks =
         True
     else
         ( (formPongs bricks) && (formHu (List.drop 3 bricks)) )
-        || ( (formKong bricks) && 
-            (formHu (dropKong bricks)) )
+        || ( (formKong bricks) && (formHu (dropKong bricks)) )
         || ( (modBy 3 (List.length bricks) == 2)&&(formChow bricks)&&(formHu (List.drop 2 bricks)) )
 
 
