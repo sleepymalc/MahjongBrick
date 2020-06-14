@@ -97,11 +97,11 @@ animate time model =
 
         (eliminated_1, rest)= 
             List.partition 
-                (\brick-> ((brick |> (collideWith model.player1.ball))&&brick.pos.y>=0)) 
+                (\brick-> (brick |> collideWith model.player1.ball)) 
                 model.bricks
         (eliminated_2, newrest)=
             List.partition
-                (\brick-> ((brick |> (collideWith model.player2.ball))&&brick.pos.y>=0))
+                (\brick-> (brick |> collideWith model.player2.ball))
                 rest
 
         audioList = 
@@ -239,6 +239,7 @@ dropKong bricks =
         |> dropBrick (suit1 + 2)
         |> List.sortBy .suit
 
+--formChow bricks = 
 
 formHu bricks =
     if List.length bricks == 0 then
@@ -273,10 +274,7 @@ collideWithPaddle paddle brick =
   &&((paddle.pos.x+paddle.speed)< (brick.pos.x+brick.size.x)))
 
 handcardSetOff handcard=
-    (Model.attribute.range.x-(toFloat(List.length handcard))*Model.brickWidth*handcardSizeRate)/2
-
-handcardSizeRate =
-    (toFloat Model.attribute.bricksNum.x) /(toFloat Model.attribute.handcardNum)
+    (Model.attribute.range.x-(toFloat(List.length handcard))*Model.brickWidth)/2
 
 
 swapSuit: Brick -> Brick -> (Brick,Brick)
@@ -332,6 +330,10 @@ catchHandcard player =
             |>List.map2 
                 (\posx card->
                     {card | 
+<<<<<<< HEAD
+                        pos=Vector (posx+ handcardSetOff(List.append handcard player.handcard)) Model.attribute.handcardPosY}
+                    ) (Model.posXList 13)
+=======
                         pos=Vector (posx*handcardSizeRate+ handcardSetOff newPlayer.handcard) 0}
                     ) (Model.posXList 13) 
             |>List.indexedMap 
@@ -340,6 +342,7 @@ catchHandcard player =
                         {card|pos=Vector card.pos.x (Model.attribute.handcardPosY-10) }
                     else
                         {card|pos=Vector card.pos.x Model.attribute.handcardPosY })
+>>>>>>> 1033a35e099c39746c00bc2dde9620524a299e43
         newFallingcard=List.filter (\card->card.pos.y<(Model.attribute.range.y*2/3+25)) fallingcard
     in
         { newPlayer
@@ -443,8 +446,6 @@ punish ball=
         {ball | punish=False}
     else
         {ball|speed= addVector ball.speed (Vector 0 0.01) }
-
-    
 
 
 changeBallSpeed paddle ball=
