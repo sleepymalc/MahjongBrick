@@ -94,14 +94,18 @@ animate: Float -> Model ->Model
 -- Might update: Haven't use time
 animate time model =
     let 
+        aftercollide_1=(List.map (\brick-> (collideWith model.player1.ball brick)) model.bricks)
+        aftercollidebricks_1=Tuple.second (List.unzip aftercollide_1)
+        aftercollide_2=(List.map (\brick-> (collideWith model.player2.ball brick)) aftercollidebricks_1)
+        aftercollidebricks_2=Tuple.second (List.unzip aftercollide_2)
 
         (eliminated_1, rest)= 
             List.partition 
-                (\brick-> (brick |> Tuple.first(collideWith model.player1.ball) && brick.count==0)) 
-                model.bricks
+                (\brick-> Tuple.first(brick |> (collideWith model.player1.ball)) && brick.count<=0) 
+                aftercollidebricks_2
         (eliminated_2, newrest)=
             List.partition
-                (\brick-> (brick |> Tuple.first(collideWith model.player2.ball) && brick.count==0))
+                (\brick-> Tuple.first(brick |> (collideWith model.player2.ball)) && brick.count<=0)
                 rest
 
         audioList = 
@@ -267,13 +271,13 @@ addFallingcard eliminated player=
 collideWith ball brick =
     let
         boolX=(ball.pos.x+ball.speed.x)|> inRange (brick.pos.x-ball.size.x) (brick.pos.x+brick.size.x)
-        boolY=(ball.pos.y+ball.speed.y)|>inRange (brick.pos.y-ball.size.y) (brick.pos.y+brick.size.y)
+        boolY=(ball.pos.y+ball.speed.y)|> inRange (brick.pos.y-ball.size.y) (brick.pos.y+brick.size.y)
     in
-    if (boolX) then
-        (True,{brick|count=brick.count-1})
-    
-    else if (boolY) then
-        (True,{brick|count=brick.count-2})
+    if (boolX&&boolY) then
+        if (ball.pos.y)|> inRange (brick.pos.y) (brick.pos.y+brick.size.y) then
+            (True,{brick|count=brick.count-1})
+        else
+            (True,{brick|count=brick.count-2})
     else 
         (False,brick)
 
@@ -344,11 +348,7 @@ catchHandcard player =
             |>List.map2 
                 (\posx card->
                     {card | 
-<<<<<<< HEAD
-                        pos=Vector ((posx*(handcardSizeRate))+ handcardSetOff newPlayer.handcard) 0}
-=======
                         pos=Vector (posx*handcardSizeRate+ handcardSetOff newPlayer.handcard) 0}
->>>>>>> ebb39e0cb813125e65702e61273d6de7d51ae2a4
                     ) (Model.posXList 13) 
             |>List.indexedMap 
                 (\index card->
@@ -407,7 +407,7 @@ moveBall state bricks player=
 collideBricks bricks ball=
     let
         x=if List.any (\brick->(
-                (collideWith ball brick)
+                (Tuple.first(collideWith ball brick))
                 && (((ball.pos.x)|> inRange (brick.pos.x-ball.size.x) (brick.pos.x+brick.size.x))==False)
                 ))
              

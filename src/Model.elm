@@ -100,7 +100,7 @@ init _=
 
 
 generateRow  suit y =
-    List.map (\x-> {suit=suit, size = Vector brickWidth brickHeight, pos = Vector x y ,count=2}) (posXList attribute.bricksNum.x)
+    List.map (\x-> {suit=suit, size = Vector brickWidth brickHeight, pos = Vector x y ,count=4}) (posXList attribute.bricksNum.x)
 
 brickWidth = attribute.range.x/attribute.bricksNum.x
 brickHeight = attribute.range.y/4/attribute.bricksNum.y
