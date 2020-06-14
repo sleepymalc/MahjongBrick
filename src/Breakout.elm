@@ -13,17 +13,6 @@ import View exposing (view)
 import Message exposing (Msg(..),MoveDirection(..),PlayerNum(..))
 import Update exposing (update)
 
--- TODO: 1 svg 坐标 (done)
--- 2 运动和碰撞的debug(上面的反弹)
--- 3 手牌 捡牌(done)
--- 4 游戏状态 （开始界面）（结束界面）
--- 5 浏览器适应 (done)
--- 6 游戏规则 （道具）(胡牌) 
--- 7 故事情节
--- 8 双人游戏 (done)
--- 9 bgm
-
-
 main =
     Browser.element
         { init = init

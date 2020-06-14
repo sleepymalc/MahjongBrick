@@ -23,7 +23,7 @@ update msg model =
         Start ->
             ( { model
                 | state = Playing
-                , player1 = model.player1 |> setBallSpeed Model.attribute.defaultBallSpeed
+                , player1 = model.player1 |> setBallSpeed Model.attribute.defaultBallSpeed 
                 , player2 = model.player2 |> setBallSpeed Model.attribute.defaultBallSpeed
               }
             , Random.generate NewBricks Model.randomList
@@ -197,11 +197,13 @@ paddleSpeed paddle =
 moveBall state bricks player=
     let 
         ball= player.ball
+            |>punish
             |>collideWallY
             |>collideWallX
             |>collideBricks bricks
             |>stayWithPaddle state player.paddle
             |>collidePaddle player.paddle
+            
         newBall = {ball|pos= addVector ball.pos ball.speed,imgIndex=modBy 6 (ball.imgIndex+1)}
     in
     {player|ball=newBall}
@@ -246,10 +248,23 @@ collideWallX ball=
         {ball|speed = changeDirection X ball.speed }
 
 collideWallY ball= 
-    if (ball.pos.y + ball.speed.y) |>inRange 0 (Model.attribute.range.y-ball.size.y)  then
+    if (ball.pos.y + ball.speed.y) |>inRange 0 ((Model.attribute.range.y-ball.size.y)*0.8)  then
        { ball|speed = ball.speed}
-    else 
+    else if ( (ball.pos.y + ball.speed.y) > ( ((Model.attribute.range.y)*0.5) )) then
+        {ball| pos= Vector (Model.attribute.range.x/2-30/2) (Model.attribute.range.y*1/2) , speed=Vector 0 0,punish=True}
+    else
         {ball|speed = changeDirection Y ball.speed }
+
+punish ball=
+    if (ball.punish == False) then
+        {ball|speed=ball.speed}
+    else if ((ball.pos.y+ball.speed.y)>(Model.attribute.range.y*2/3)) then
+        {ball | punish=False}
+    else
+        {ball|speed= addVector ball.speed (Vector 0 0.01) }
+
+    
+
 
 changeBallSpeed paddle ball=
     {ball|speed = { x=(changeDirection Y ball.speed).x+(0.5*paddle.speed) ,y=(changeDirection Y ball.speed).y}}

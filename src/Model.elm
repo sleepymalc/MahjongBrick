@@ -54,6 +54,7 @@ type alias Ball =
     , pos: Pos
     , speed: Speed
     , imgIndex: Int
+    , punish: Bool
     }
 
 type alias Paddle =
@@ -71,6 +72,7 @@ type alias Player =
     {   paddle: Paddle
        ,ball: Ball
        ,handcard: List Brick
+       ,chosen: Int
        ,skill: List Brick
        ,fallingcard: List Brick 
     }
@@ -136,15 +138,18 @@ initBricks values=
                     (\index brick->
                         {brick|suit=index}
                     )
+
     in
         bricks
-    
+        
+  
 
 initPlayer : Player
 initPlayer = 
     { paddle = initPaddle
     , ball = initBall
     , handcard = []
+    , chosen = 0
     , skill = []
     , fallingcard = []
     }
@@ -161,5 +166,6 @@ initBall =
     { size = {x = 20, y = 20}
     , pos = Vector (attribute.range.x/2-30/2) (attribute.range.y*2/3) 
     , speed = attribute.defaultBallSpeed
+    , punish = False
     , imgIndex=0
     }
