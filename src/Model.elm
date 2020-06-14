@@ -140,7 +140,6 @@ initBricks values model=
                     (\index brick->
                         {brick|suit=index}
                     )
-<<<<<<< HEAD
                 |> List.sortBy (\brick ->  brick.pos.y * 10000+ brick.pos.x)
 
         (player1, rest) = deal bricks model.player1
@@ -159,13 +158,6 @@ deal bricks player =
     in 
         ({player|handcard = handcard}, newBricks)
     
-=======
-
-    in
-        bricks
-        
-  
->>>>>>> 9fb0a738ea601f7680a6e63c2500e56c8a5cb6db
 
 initPlayer : Player
 initPlayer = 
