@@ -289,7 +289,7 @@ collideWithPaddle paddle brick =
   &&((paddle.pos.x+paddle.speed)< (brick.pos.x+brick.size.x)))
 
 handcardSetOff handcard=
-    (Model.attribute.range.x-(toFloat(List.length handcard))*Model.brickWidth*handcardSizeRate)/2
+    (Model.attribute.range.x-(toFloat(List.length handcard))*Model.brickWidth)/2
 
 handcardSizeRate =
     (toFloat Model.attribute.bricksNum.x)/(toFloat Model.attribute.handcardNum)
