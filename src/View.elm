@@ -23,6 +23,7 @@ view model =
             renderHtml =
                 case model.state of
                     Playing->
+                        List.append
                         [audio
                             [src "bgm/1.mp3", (autoplay True)]
                             [Html.text "Your browser does not support the audio"]
@@ -30,6 +31,8 @@ view model =
                             [src "bgm/bgm1.mp3", (autoplay True), (loop True)]
                             [Html.text "Your browser does not support the audio"]
                         ]
+                        (List.map renderAudio model.audioList)
+
                     Paused->
                         [renderStart model]
     in
@@ -45,7 +48,12 @@ view model =
                 (renderPlayer model.bricks model.player2)
             , span[]renderHtml
             ]
+            
 
+renderAudio url =
+    audio
+        [src url, (autoplay True)]
+        [Html.text "Your browser does not support the audio"]
 
 renderPlayer bricks player = 
     renderbackground
@@ -131,7 +139,9 @@ renderBrick brick =
     
 
 renderBricks bricks =
-    List.map renderBrick bricks
+    bricks
+    |> List.filter (\brick-> brick.pos.y>=0)
+    |> List.map renderBrick 
 
 
 renderStart model=

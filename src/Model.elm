@@ -80,6 +80,7 @@ type alias Model =
     , bricks: List Brick
     , state: State
     , size: Size
+    , audioList: List String
     --background : Background
     }
 
@@ -89,7 +90,7 @@ attribute =
     , bricksNum = Vector 12 3--need change?
     , totalBricksNum = 144
     , defaultBallSpeed =Vector 3 -2
-    , handcardPosY = 600
+    , handcardPosY = 650
     }
 
     
@@ -100,17 +101,18 @@ init _=
     , bricks = []
     , state = Paused--to be update
     , size = Vector 0 0
+    , audioList = []
     --,{ background = { width=widthRange, height= heightRange, pos={x=0,y=0}}
     },Task.perform GetViewport getViewport)
 
 
 generateRow  suit y =
-    List.map (\x-> {suit=suit, size = Vector brickWidth brickHeight, pos = Vector x y }) posXList
+    List.map (\x-> {suit=suit, size = Vector brickWidth brickHeight, pos = Vector x y }) (posXList attribute.bricksNum.x)
 
 brickWidth = attribute.range.x/attribute.bricksNum.x
 brickHeight = attribute.range.y/4/attribute.bricksNum.y
-posXList = 
-    (List.range 0 (attribute.bricksNum.x-1)
+posXList n= 
+    (List.range 0 (n-1)
         |> List.map (\x-> ((toFloat x))*brickWidth))
 posYList = List.range (-attribute.bricksNum.y+1) (attribute.totalBricksNum//attribute.bricksNum.x-attribute.bricksNum.y)
             |> List.map (\x-> -((toFloat x))*brickHeight)
