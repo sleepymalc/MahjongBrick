@@ -35,6 +35,8 @@ view model =
 
                     Paused->
                         [renderStart model]
+                    Win player ->
+                        [renderStart model]
     in
         div
             []
@@ -136,6 +138,7 @@ renderBrick brick =
         , ry "1"
         ]
     []
+
     
 
 renderBricks bricks =
