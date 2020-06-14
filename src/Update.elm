@@ -333,8 +333,6 @@ dropCard handcard player  =
         , handcard = newHandcard
         }
 
-handcardSizeRate = Model.attribute.bricksNum.x/Model.attribute.handcardNum
-
 catchHandcard: Player -> Player
 catchHandcard player =
     let
@@ -350,19 +348,8 @@ catchHandcard player =
             |>List.map2 
                 (\posx card->
                     {card | 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-                        pos=Vector (posx* (handcardSizeRate)+ (handcardSetOff newPlayer.handcard)) 0
-                    }) (Model.posXList 13) 
-=======
-<<<<<<< HEAD
-                        pos=Vector ((posx*(handcardSizeRate))+ handcardSetOff newPlayer.handcard) 0}
-=======
->>>>>>> 540e7c9bc2bb8d6848d014e9e1a6d27fb7f37d60
                         pos=Vector (posx*handcardSizeRate+ handcardSetOff newPlayer.handcard) 0}
                     ) (Model.posXList 13) 
->>>>>>> fec30c95329426cdbe6f838b050d7d1c5d0685ff
             |>List.indexedMap 
                 (\index card->
                     if index == player.chosenCard then
