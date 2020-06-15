@@ -23,7 +23,6 @@ view model =
             renderHtml =
                 case model.state of
                     Playing->
-                        List.append
                         [audio
                             [src "bgm/1.mp3", (autoplay True)]
                             [Html.text "Your browser does not support the audio"]
@@ -31,7 +30,7 @@ view model =
                             [src "bgm/bgm1.mp3", (autoplay True), (loop True)]
                             [Html.text "Your browser does not support the audio"]
                         ]
-                        (List.map renderAudio model.audioList)
+                        ++ (List.map renderAudio model.audioList)
 
                     Paused->
                         [renderStart model]
@@ -63,7 +62,7 @@ renderPlayer bricks player =
     :: renderLogo
     :: renderPaddle player.paddle
     :: renderBall  player.ball    
-    :: renderBricks (List.append player.fallingcard player.handcard)
+    :: renderBricks (player.fallingcard ++ player.handcard)
     ++ renderunBricks (bricks)
 
 renderBall ball =
