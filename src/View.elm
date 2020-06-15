@@ -10,6 +10,7 @@ import Html.Events exposing (on, onClick, onMouseDown, onMouseUp)
 
 import Model exposing (Model, attribute,State(..))
 import Message exposing (Msg(..))
+import Model exposing (Vector)
 
 
 view : Model -> Html Msg
@@ -23,15 +24,10 @@ view model =
             renderHtml =
                 case model.state of
                     Playing->
-                        List.append
-                        [audio
-                            [src "bgm/1.mp3", (autoplay True)]
+                        audio
+                            [src "bgm/bgm1.mp3", autoplay True, loop True]
                             [Html.text "Your browser does not support the audio"]
-                        ,audio
-                            [src "bgm/bgm1.mp3", (autoplay True), (loop True)]
-                            [Html.text "Your browser does not support the audio"]
-                        ]
-                        (List.map renderAudio model.audioList)
+                        :: List.map renderAudio model.audioList
 
                     Paused->
                         [renderStart model]
@@ -54,16 +50,15 @@ view model =
 
 renderAudio url =
     audio
-        [src url, (autoplay True)]
+        [src url, autoplay True]
         [Html.text "Your browser does not support the audio"]
 
 renderPlayer bricks player = 
     renderbackground
-    :: renderFrame
     :: renderLogo
     :: renderPaddle player.paddle
     :: renderBall  player.ball    
-    :: renderBricks (List.append player.fallingcard player.handcard)
+    :: renderBricks (player.fallingcard ++ player.handcard)
     ++ renderunBricks (bricks)
 
 renderBall ball =
@@ -74,24 +69,12 @@ renderBall ball =
             else 
                 "img/dice/dice_rolling_"++(String.fromInt (ball.imgIndex+1))++".png"
     in 
-    Svg.image
-        [   xlinkHref ref
-        ,   width (String.fromFloat ball.size.x)
-        ,   height (String.fromFloat ball.size.y)
-        ,   x (String.fromFloat ball.pos.x)
-        ,   y (String.fromFloat ball.pos.y)
-        ]
-    []
+    renderImage ref ball.size ball.pos []
+    
 
 renderLogo =
-    Svg.image
-        [  xlinkHref "img/logo.png"
-        , x "0"
-        , y "0"
-        , width (String.fromFloat Model.attribute.range.x)
-        , height (String.fromFloat Model.attribute.range.y)
-        ]
-    []
+    renderImage "img/logo.png" Model.attribute.range (Vector 0 0) []
+    
 renderPaddle paddle =
     rect
         [ x (String.fromFloat paddle.pos.x)
@@ -118,26 +101,8 @@ renderbackground =
         ]
         []
     
-renderFrame =
-    Svg.image
-        [ xlinkHref "img/frame.png"
-        , x "0"
-        , y "0"
-        , width (String.fromFloat Model.attribute.range.x)
-        , height (String.fromFloat Model.attribute.range.y)
-        ]
-    []
 renderunBrick brick =
-    Svg.image
-        [  xlinkHref ("img/suit/43.png")
-        , width (String.fromFloat brick.size.x)--(String.fromFloat 40.2)
-        , height (String.fromFloat brick.size.y)--(String.fromFloat 52.8)
-        , x (String.fromFloat brick.pos.x)
-        , y (String.fromFloat brick.pos.y)
-        , rx "1"
-        , ry "1"
-        ]
-    []
+    renderImage "img/suit/43.png" brick.size brick.pos [opacity (String.fromFloat ((toFloat brick.count) / 4))]
 
 renderunBricks bricks=
     bricks
@@ -146,16 +111,7 @@ renderunBricks bricks=
 
 
 renderBrick brick =
-    Svg.image
-        [  xlinkHref ("img/suit/"++(String.fromInt (brick.suit//4+1))++".png")
-        , width (String.fromFloat brick.size.x)--(String.fromFloat 40.2)
-        , height (String.fromFloat brick.size.y)--(String.fromFloat 52.8)
-        , x (String.fromFloat brick.pos.x)
-        , y (String.fromFloat brick.pos.y)
-        , rx "1"
-        , ry "1"
-        ]
-    []
+    renderImage ("img/suit/"++String.fromInt ((brick.suit-1)//4+1)++".png") brick.size brick.pos []
 
     
 
@@ -190,3 +146,14 @@ renderStart model=
                 , onClick Start
                 ]
                 [ Html.text "Start" ]
+
+renderImage url size pos attr=
+    Svg.image
+        ([  xlinkHref url
+        , width (String.fromFloat size.x)--(String.fromFloat 40.2)
+        , height (String.fromFloat size.y)--(String.fromFloat 52.8)
+        , x (String.fromFloat pos.x)
+        , y (String.fromFloat pos.y)
+        ]
+        ++ attr)
+    []
