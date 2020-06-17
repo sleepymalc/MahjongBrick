@@ -121,9 +121,16 @@ addFallingcard eliminated player=
 --move player's falling cards
 moveFallingcard player=
     let
-        fallingcards = List.map (\card-> {card|pos={x=card.pos.x,y=card.pos.y+1}}) player.fallingcard
+        fallingcards = List.map (\card-> {card|pos=nextPos card}) player.fallingcard
     in
         {player|fallingcard=fallingcards}
+
+nextPos a= 
+    addCoeffientVector 1 a.pos a.speed
+
+addCoeffientVector: Float -> Vector Float -> Vector Float -> Vector Float
+addCoeffientVector a x y=
+    Vector (a*x.x+y.x) (a*x.y+y.y)
 
 
 

@@ -12,5 +12,7 @@ type Msg
     | Noop
     | GetViewport Viewport
     | Start
+    | Rule
+    | Story
     | NewBricks (List Int)
     | MoveHandcard PlayerNum MoveDirection Bool

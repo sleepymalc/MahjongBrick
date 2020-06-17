@@ -31,6 +31,24 @@ update msg model =
             , Random.generate NewBricks Model.randomList
             )
 
+        Message.Rule -> 
+            ( { model
+                | state = Model.Rule
+                , player1 = model.player1 |> setBallSpeed Model.attribute.defaultBallSpeed 
+                , player2 = model.player2 |> setBallSpeed Model.attribute.defaultBallSpeed
+              }
+            , Random.generate NewBricks Model.randomList
+            )
+
+        Message.Story ->
+            ( { model
+                | state = Model.Story
+                , player1 = model.player1 |> setBallSpeed Model.attribute.defaultBallSpeed 
+                , player2 = model.player2 |> setBallSpeed Model.attribute.defaultBallSpeed
+              }
+            , Random.generate NewBricks Model.randomList
+            )
+
         NewBricks values->
             ( initBricks values model
             , Cmd.none
@@ -52,12 +70,12 @@ update msg model =
 
         Tick time ->
             case model.state of
-                Win _ ->
-                    (model , Cmd.none )
                 Playing ->
                     (model |> animate (min time 25) , Cmd.none )
                 Paused ->
                     (model |> animate (min time 25) , Cmd.none )
+                _ ->
+                    (model , Cmd.none )
 
         Noop ->
             ( model, Cmd.none )

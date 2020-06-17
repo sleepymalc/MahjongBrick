@@ -41,7 +41,7 @@ cancel player =
             |> setBallSpeed  0.8
         Autumn lasttime ->
             { player | state = None}
-            --|> setBrickSpeed 0.8
+            |> setFallingcardSpeed 0.8
             
         Winter lasttime ->
             { player | state = None}
@@ -66,7 +66,7 @@ apply state player =
                 |> setBallSpeed  1.25
             Autumn lasttime ->
                 { canceledPlayer | state = state}
-                --|> setBrickSpeed 1.25
+                |> setFallingcardSpeed 1.25
             Winter lasttime ->
                 { canceledPlayer | state = state}
             AllView lasttime ->
@@ -75,12 +75,12 @@ apply state player =
                 { canceledPlayer | state = state}
 
 
-{-setBrickSpeed times player = 
+setFallingcardSpeed times player = 
     let 
-        brick = player.brick
-        newBrick = { brick | speed = Vector (brick.speed.x*times) (brick.speed.y*times)}
+        fallingcard = player.fallingcard
+        newFallingcard = List.map (\brick -> { brick | speed = Vector (brick.speed.x*times) (brick.speed.y*times)}) fallingcard
     in
-        { player|brick = newBrick }-}
+        { player|fallingcard = newFallingcard }
 
 setBallSpeed times player = 
     let 
@@ -91,13 +91,13 @@ setBallSpeed times player =
 
 applyCard brick player =
     case brick.suit of
-        34 ->
+        38 ->
             player |> apply (Spring 20)
-        35 ->
+        39 ->
             player |> apply (Summer 20)
-        36 ->
+        40 ->
             player |> apply (Autumn 20)
-        37 ->
+        41 ->
             player |> apply (Winter 20)
         _ ->
             player
@@ -112,13 +112,13 @@ setPaddleSize times player=
 
 sendCard brick player =
     case brick.suit of
-        38 ->
+        34 ->
             player |> apply (Winter 20)
-        39 ->
+        35 ->
             player |> apply (AllView 5)
-        40 ->
+        36 ->
             setPaddleSize 1.2 player 
-        41->
+        37->
             setPaddleSize 0.8 player 
         _->
             player

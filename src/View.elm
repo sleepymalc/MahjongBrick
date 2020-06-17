@@ -27,9 +27,15 @@ view model =
                         :: List.map renderAudio model.audioList
 
                     Paused->
-                        [renderStart model]
+                        renderStart model
+                    
+                    Model.Rule -> 
+                        renderRule model
+
+                    Model.Story ->
+                        renderStory model
                     Win player ->
-                        [renderOver model player]
+                        renderOver model player
 
             renderSvg = 
                 case model.state of
@@ -42,6 +48,11 @@ view model =
                             (renderPlayerPlaying model.bricks model.player2)
                         ]
                     Paused->
+                        []
+                    Model.Rule -> 
+                        []
+
+                    Model.Story -> 
                         []
                     Win player ->
                         case player of 
@@ -68,7 +79,8 @@ view model =
             , span[]renderHtml
             ]
             
-
+renderRule model=[]
+renderStory model =[]
 gameUIAttribute size= 
     [ width (String.fromFloat (size.x*2/5))
     , height (String.fromFloat size.y)
@@ -186,30 +198,63 @@ renderBricks bricks =
 
 
 renderStart model=
-            button
-                [ Html.Attributes.style "background" "#34495f"
-                , Html.Attributes.style "border" "0"
-                , Html.Attributes.style "bottom" "30px"
-                , Html.Attributes.style "color" "#fff"
-                , Html.Attributes.style "cursor" "pointer"
-                , Html.Attributes.style "display" "block"
-                , Html.Attributes.style "font-family" "Helvetica, Arial, sans-serif"
-                , Html.Attributes.style "font-size" "18px"
-                , Html.Attributes.style "font-weight" "300"
-                , Html.Attributes.style "height" "60px"
-                , Html.Attributes.style "left" "30px"
-                , Html.Attributes.style "line-height" "60px"
-                , Html.Attributes.style "outline" "none"
-                , Html.Attributes.style "padding" "0"
-                -- Display at center
-                , Html.Attributes.style "position" "absolute"
-                , Html.Attributes.style "left" ((String.fromFloat (model.size.x/2-60))++"px")
-                , Html.Attributes.style "top" ((String.fromFloat (model.size.y/2-30))++"px")
-                -- 
-                , Html.Attributes.style "width" "120px"
-                , onClick Start
-                ]
-                [ Html.text "Start" ]
+    [button
+        [  Html.Attributes.style "border" "0"
+        , Html.Attributes.style "bottom" "30px"
+        , Html.Attributes.style "cursor" "pointer"
+        , Html.Attributes.style "display" "block"
+        , Html.Attributes.style "height" "60px"
+        , Html.Attributes.style "left" "30px"
+        , Html.Attributes.style "line-height" "60px"
+        , Html.Attributes.style "outline" "none"
+        , Html.Attributes.style "padding" "0"
+        -- Display at center
+        , Html.Attributes.style "position" "absolute"
+        , Html.Attributes.style "left" ((String.fromFloat (model.size.x/2-60))++"px")
+        , Html.Attributes.style "top" ((String.fromFloat (model.size.y/2-100))++"px")
+        -- 
+        , Html.Attributes.style "width" "120px"
+        , onClick Start
+        ]
+        [ Html.img [src "img/button/start.png", height "60px" , width "120px"][] ]
+    , button
+        [  Html.Attributes.style "border" "0"
+        , Html.Attributes.style "bottom" "30px"
+        , Html.Attributes.style "cursor" "pointer"
+        , Html.Attributes.style "display" "block"
+        , Html.Attributes.style "height" "60px"
+        , Html.Attributes.style "left" "30px"
+        , Html.Attributes.style "line-height" "60px"
+        , Html.Attributes.style "outline" "none"
+        , Html.Attributes.style "padding" "0"
+        -- Display at center
+        , Html.Attributes.style "position" "absolute"
+        , Html.Attributes.style "left" ((String.fromFloat (model.size.x/2-60))++"px")
+        , Html.Attributes.style "top" ((String.fromFloat (model.size.y/2-30))++"px")
+        -- 
+        , Html.Attributes.style "width" "120px"
+        , onClick Message.Story
+        ]
+        [ Html.img [src "img/button/story.png", height "60px" , width "120px"][] ]
+    , button
+        [  Html.Attributes.style "border" "0"
+        , Html.Attributes.style "bottom" "30px"
+        , Html.Attributes.style "cursor" "pointer"
+        , Html.Attributes.style "display" "block"
+        , Html.Attributes.style "height" "60px"
+        , Html.Attributes.style "left" "30px"
+        , Html.Attributes.style "line-height" "60px"
+        , Html.Attributes.style "outline" "none"
+        , Html.Attributes.style "padding" "0"
+        -- Display at center
+        , Html.Attributes.style "position" "absolute"
+        , Html.Attributes.style "left" ((String.fromFloat (model.size.x/2-60))++"px")
+        , Html.Attributes.style "top" ((String.fromFloat (model.size.y/2+40))++"px")
+        -- 
+        , Html.Attributes.style "width" "120px"
+        , onClick Message.Rule
+        ]
+        [ Html.img [src "img/button/rule.png", height "60px" , width "120px"][] ]]
 
 renderImage url size pos attr=
     Svg.image

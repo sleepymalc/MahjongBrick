@@ -89,11 +89,9 @@ collideWith ball brick =
 
 stayWithPaddle state paddle ball =
     case state of
-        Playing ->
-            {ball|speed = ball.speed}
         Paused ->
             {ball|speed = paddle.speed}
-        Win _ ->
+        _ ->
             {ball|speed = ball.speed}
 
 
