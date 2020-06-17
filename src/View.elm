@@ -11,6 +11,7 @@ import Html.Events exposing (on, onClick, onMouseDown, onMouseUp)
 import Model exposing (Model, attribute,State(..))
 import Message exposing (Msg(..),PlayerNum(..))
 import Model exposing (Vector)
+import Animate exposing (partPaddle)
 
 
 view : Model -> Html Msg
@@ -89,8 +90,9 @@ renderAudio url =
 renderPlayerPlaying bricks player = 
     renderbackground
     :: renderLogo
-    :: renderPaddle player.paddle
     :: renderBall  player.ball    
+    :: renderPaddle player.paddle
+    :: renderPaddle (partPaddle player.paddle)
     :: renderBricks (player.fallingcard ++ player.handcard)
     ++ renderunBricks (bricks)
 
@@ -137,6 +139,7 @@ renderPaddle paddle =
         , fill "black"
         ]
         []
+        
 
 
     
@@ -151,7 +154,13 @@ renderbackground =
         []
     
 renderunBrick brick =
-    renderImage "img/Monhjong/43.png" brick.size (Vector brick.pos.x (brick.pos.y+10)) [opacity (String.fromFloat ((toFloat brick.count) / 4))]
+    let
+        imgIndex = if brick.count== Model.attribute.brickCount then
+                43
+            else
+                44
+    in
+    renderImage ("img/Monhjong/"++String.fromInt imgIndex++".png") brick.size (Vector brick.pos.x (brick.pos.y+10)) []
 
 renderunBricks bricks=
     bricks
@@ -166,7 +175,7 @@ renderBrick brick =
 
 renderBricks bricks =
     bricks
-    |> List.filter (\brick-> brick.pos.y>=0)
+    |> List.filter (\brick->  brick.pos.y+brick.size.y >0)
     |> List.map renderBrick 
 
 

@@ -79,11 +79,12 @@ type alias Model =
 attribute =
     { playersNum = 2
     , range = Vector 600 800
-    , bricksNum = Vector 12 3--need change?
+    , bricksNum = Vector 13 3--need change?
     , totalBricksNum = 144
     , defaultBallSpeed =Vector 3 -2
     , handcardPosY = 650
-    , handcardNum = 13
+    , handcardNum = 4
+    , brickCount = 4
     }
 
     
@@ -92,7 +93,7 @@ init _=
     ({ player1 = initPlayer
     , player2 = initPlayer
     , bricks = []
-    , state = Win Player2
+    , state = Paused
     , size = Vector 0 0
     , audioList = []
     --,{ background = { width=widthRange, height= heightRange, pos={x=0,y=0}}
@@ -100,7 +101,7 @@ init _=
 
 
 generateRow  suit y =
-    List.map (\x-> {suit=suit, size = Vector brickWidth brickHeight, pos = Vector x y ,count=2}) (posXList attribute.bricksNum.x)
+    List.map (\x-> {suit=suit, size = Vector brickWidth brickHeight, pos = Vector x y ,count=attribute.brickCount}) (posXList attribute.bricksNum.x)
 
 brickWidth = attribute.range.x/attribute.bricksNum.x
 brickHeight = attribute.range.y/4/attribute.bricksNum.y
@@ -163,8 +164,8 @@ initPlayer =
     
 initPaddle : Paddle
 initPaddle =
-    {  size = {x = 100, y = 20}
-    , pos = Vector (attribute.range.x/2-100/2) (attribute.range.y*2/3+25) 
+    {  size = {x = 200, y = 20}
+    , pos = Vector (attribute.range.x/2-200/2) (attribute.range.y*2/3+25) 
     , speed = 0
     }
 

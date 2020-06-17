@@ -1,4 +1,4 @@
-module Animate exposing (animate)
+module Animate exposing (animate,partPaddle)
 
 import Model exposing (..)
 import Message exposing (Msg(..),MoveDirection(..),PlayerNum(..))
@@ -8,20 +8,27 @@ import Mahjong exposing (formHu)
 animate: Float -> Model ->Model -- Might update: Haven't use time
 animate time model =
     let 
+        --model = applySkill oldModel
+
         (vaildBricks,invaildBricks) = model.bricks
-            |> List.partition (\brick-> brick.pos.y+brick.size.y >=0)
+            |> List.partition (\brick-> brick.pos.y+brick.size.y >0)
             
-        aftercollide_1=(List.map (\brick-> (collideWith model.player1.ball brick)) vaildBricks)
+        aftercollidebricks_1=vaildBricks
+            |>List.map (\brick-> collideWith model.player1.ball brick)
+            |>List.unzip
+            |>Tuple.second
 
-        aftercollidebricks_1=Tuple.second (List.unzip aftercollide_1)
-
-        aftercollide_2=(List.map (\brick-> (collideWith model.player2.ball brick)) aftercollidebricks_1)
-        aftercollidebricks_2=Tuple.second (List.unzip aftercollide_2)
+        aftercollidebricks_2=aftercollidebricks_1
+            |>List.map (\brick-> collideWith model.player2.ball brick)
+            |>List.unzip
+            |>Tuple.second
 
         (eliminated_1, rest)= 
             List.partition 
                 (\brick-> Tuple.first(brick |> (collideWith model.player1.ball)) && brick.count<=0) 
                 aftercollidebricks_2
+
+
         (eliminated_2, newrest)=
             List.partition
                 (\brick-> Tuple.first(brick |> (collideWith model.player2.ball)) && brick.count<=0)
@@ -49,6 +56,8 @@ animate time model =
                 |> moveFallingcard
                 |> addFallingcard eliminated_2
                 
+        
+
         bricks = moveBricks (newrest ++ invaildBricks)
 
         state = updateState player1 player2 model.state
@@ -61,6 +70,9 @@ animate time model =
             , audioList=audioList
             , state=state
         }
+
+
+
 
 
 -- updateState
@@ -121,22 +133,37 @@ collideWith ball brick =
         (False,brick)
 
 
-
-collideWithPaddle paddle brick =
-    (((paddle.pos.y)|>inRange (brick.pos.y+brick.size.y) (brick.pos.y+brick.size.y+paddle.size.y+1))
-  &&((paddle.pos.x+paddle.speed+paddle.size.x) > (brick.pos.x))
-  &&((paddle.pos.x+paddle.speed)< (brick.pos.x+brick.size.x)))
+partPaddle paddle= 
+    let
+        sizeX = (paddle.pos.x+paddle.speed+paddle.size.x) - Model.attribute.range.x
+    in
+        {paddle| pos = Vector 0 paddle.pos.y, size = Vector sizeX paddle.size.y}
+collideWithPaddle paddle pos size=
+    (paddle.pos.y|>inRange (pos.y+size.y) (pos.y+size.y+paddle.size.y+1))
+  &&(paddle.pos.x+paddle.speed+paddle.size.x) > pos.x
+  &&(paddle.pos.x+paddle.speed)< (pos.x+size.x)
 
 
 -- catchHandcard
+isSkillCard brick =
+    brick.suit >= 34
+
 catchHandcard: Player -> Player
 catchHandcard player =
     let
         (handcards,fallingcard)=
             List.partition
-                    (\brick-> (brick |> collideWithPaddle player.paddle))
+                    (\brick-> 
+                        collideWithPaddle player.paddle brick.pos brick.size 
+                        || collideWithPaddle (partPaddle player.paddle) brick.pos brick.size)
                     player.fallingcard 
-        newPlayer = List.foldl dropCard player handcards
+        (skill, addingCard) = 
+            List.partition
+                (\brick ->
+                    isSkillCard brick
+                    ) handcards
+
+        newPlayer = List.foldl dropCard player addingCard
 
 
         newHandcard = newPlayer.handcard
@@ -144,7 +171,7 @@ catchHandcard player =
             |>List.map2 
                 (\posx card->
                     {card | 
-                        pos=Vector (posx*handcardSizeRate+ handcardSetOff newPlayer.handcard) 0}
+                        pos=Vector (posx+ handcardSetOff newPlayer.handcard) 0}
                     ) (Model.posXList 13) 
             |>List.indexedMap 
                 (\index card->
@@ -156,13 +183,12 @@ catchHandcard player =
     in
         { newPlayer
         | fallingcard = newFallingcard
-        , handcard = newHandcard}
+        , handcard = newHandcard
+        , skill = skill}
 
 handcardSetOff handcard=
-    (Model.attribute.range.x-(toFloat(List.length handcard))*Model.brickWidth*handcardSizeRate)/2
+    (Model.attribute.range.x-(toFloat(List.length handcard))*Model.brickWidth)/2
 
-handcardSizeRate =
-    (toFloat Model.attribute.bricksNum.x)/(toFloat Model.attribute.handcardNum)
 
 
 swapSuit: Brick -> Brick -> (Brick,Brick)
@@ -184,6 +210,8 @@ droppingCard player handcard= case (chooseCard player) of
             Just card ->
                 card
 
+
+
 dropCard: Brick -> Player -> Player
 dropCard handcard player  =
     let
@@ -204,21 +232,25 @@ dropCard handcard player  =
         }
 
 
+
      
 
 --move player's paddle with respect to the positino range and paddle's speed
---movePaddle: Player->Player--animate helper
+movePaddle: Player->Player--animate helper
 movePaddle player=
     let
         paddle = player.paddle
-        newPaddle = {paddle|pos= Vector (paddle.pos.x+(paddleSpeed paddle)) paddle.pos.y}
+        x = paddle.pos.x+paddle.speed
+        posX = 
+            if x<0 then
+                x+ attribute.range.x 
+            else if x > attribute.range.x then
+                x- attribute.range.x 
+            else 
+                x
+        newPaddle = {paddle|pos= Vector posX paddle.pos.y}
     in
         {player|paddle = newPaddle}
---paddleSpeed: Paddle->Float--movePaddle helper
-paddleSpeed paddle =
-    if (paddle.pos.x + paddle.speed)|>inRange 0 (Model.attribute.range.x-paddle.size.x) then
-        paddle.speed
-    else 0
 
 
 
@@ -309,18 +341,22 @@ stayWithPaddle state paddle ball =
             {ball|speed = ball.speed}
 
 
-collidePaddle paddle ball =
-    if ((ball.pos.x + ball.speed.x) 
+judgeCollidePaddleBall paddle ball=
+    ((ball.pos.x + ball.speed.x) 
         |> inRange (paddle.pos.x - ball.size.x) (paddle.pos.x+paddle.size.x)) --might update
     && ((ball.pos.y + ball.speed.y + ball.size.y)>(paddle.pos.y)  )
-    && ((ball.pos.y+ball.size.y)<(paddle.pos.y)  )
+    && ((ball.pos.y+ball.size.y)<(paddle.pos.y))
+
+collidePaddle paddle ball =
+    if judgeCollidePaddleBall paddle ball
+    || judgeCollidePaddleBall (partPaddle paddle) ball
     then 
          changeBallSpeed paddle ball
     else 
          {ball|speed = ball.speed}
 
 changeBallSpeed paddle ball=
-    {ball|speed = { x=(changeDirection Y ball.speed).x+(0.5*paddle.speed) ,y=(changeDirection Y ball.speed).y}}
+    {ball|speed = { x=(changeDirection Y ball.speed).x+(0.1*paddle.speed) ,y=(changeDirection Y ball.speed).y}}
 
 
 

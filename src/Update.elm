@@ -62,6 +62,8 @@ update msg model =
         Noop ->
             ( model, Cmd.none )
 
+
+
 getSpeedDirection moveDirection on =
     if on then
         case moveDirection of
