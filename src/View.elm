@@ -11,7 +11,8 @@ import Html.Events exposing (on, onClick, onMouseDown, onMouseUp)
 import Model exposing (Model, attribute,State(..))
 import Message exposing (Msg(..),PlayerNum(..))
 import Model exposing (Vector)
-import Animate exposing (partPaddle)
+import Paddle exposing (partPaddle)
+import Model exposing (PlayingState(..))
 
 
 view : Model -> Html Msg
@@ -94,7 +95,7 @@ renderPlayerPlaying bricks player =
     :: renderPaddle player.paddle
     :: renderPaddle (partPaddle player.paddle)
     :: renderBricks (player.fallingcard ++ player.handcard)
-    ++ renderunBricks (bricks)
+    ++ renderunBricks player (bricks)
 
 
 renderPlayerWin bricks player =
@@ -119,7 +120,7 @@ renderLose =
 renderBall ball =
     let 
         ref = 
-            if ball.speed == {x=0,y=0} then 
+            if ball.speed == Vector 0 0 then 
                 "img/dice/dice_"++(String.fromInt 1)++".png"
             else 
                 "img/dice/dice_rolling_"++(String.fromInt (ball.imgIndex+1))++".png"
@@ -153,19 +154,24 @@ renderbackground =
         ]
         []
     
-renderunBrick brick =
+renderunBrick player brick =
     let
-        imgIndex = if brick.count== Model.attribute.brickCount then
-                43
-            else
-                44
+        imgIndex = 
+            case player.state of
+                AllView _->
+                    brick.suit+1
+                _ -> 
+                    if brick.count== Model.attribute.brickCount then
+                        43
+                    else
+                        44
     in
     renderImage ("img/Monhjong/"++String.fromInt imgIndex++".png") brick.size (Vector brick.pos.x (brick.pos.y+10)) []
 
-renderunBricks bricks=
+renderunBricks player bricks=
     bricks
     |> List.filter(\brick->brick.pos.y>=0)
-    |> List.map renderunBrick
+    |> List.map (renderunBrick player)
 
 
 renderBrick brick =

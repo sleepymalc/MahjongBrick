@@ -29,6 +29,7 @@ type alias Brick =
     , size: Size
     , pos: Pos
     , count: Int
+    , speed: Speed
     }
 
 type State
@@ -47,7 +48,8 @@ type alias Ball =
 type alias Paddle =
     { size: Size
     , pos: Pos
-    , speed: Float
+    , speed: Speed
+    , accelaration: Vector Float
     }
 
 type alias Background =
@@ -65,7 +67,17 @@ type alias Player =
     , chosenCard: Int 
     , moveHandcard: Int
     , droppedcard: List Brick 
+    , state: PlayingState
     }
+type PlayingState =
+    Spring Float
+    | Summer Float
+    | Autumn Float
+    | Winter Float
+    | AllView Float
+    | None
+
+
 type alias Model =
     { player1: Player
     , player2: Player 
@@ -73,6 +85,7 @@ type alias Model =
     , state: State
     , size: Size
     , audioList: List String
+    --, view: Bool
     --background : Background
     }
 
@@ -83,8 +96,12 @@ attribute =
     , totalBricksNum = 144
     , defaultBallSpeed =Vector 3 -2
     , handcardPosY = 650
-    , handcardNum = 4
+    , handcardNum = 13
     , brickCount = 4
+    , paddleAccelaration = 0.01---1 in Update
+    , brickSpeed = 1
+    , maxPaddleSpeedX = 4
+    , fiction = Vector 1 0
     }
 
     
@@ -101,7 +118,13 @@ init _=
 
 
 generateRow  suit y =
-    List.map (\x-> {suit=suit, size = Vector brickWidth brickHeight, pos = Vector x y ,count=attribute.brickCount}) (posXList attribute.bricksNum.x)
+    List.map (\x-> 
+        { suit=suit
+        , size = Vector brickWidth brickHeight
+        , pos = Vector x y 
+        , count=attribute.brickCount
+        , speed = Vector 0 attribute.brickSpeed
+        }) (posXList attribute.bricksNum.x)
 
 brickWidth = attribute.range.x/attribute.bricksNum.x
 brickHeight = attribute.range.y/4/attribute.bricksNum.y
@@ -160,18 +183,20 @@ initPlayer =
     , chosenCard = 0
     , moveHandcard = 0
     , droppedcard = []
+    , state = None
     }
     
 initPaddle : Paddle
 initPaddle =
-    {  size = {x = 200, y = 20}
+    { size = Vector 200 20
     , pos = Vector (attribute.range.x/2-200/2) (attribute.range.y*2/3+25) 
-    , speed = 0
+    , speed = Vector 0 0
+    , accelaration = Vector 0 0
     }
 
 initBall : Ball
 initBall =
-    { size = {x = 20, y = 20}
+    { size = Vector 20 20
     , pos = Vector (attribute.range.x/2-30/2) (attribute.range.y*2/3) 
     , speed = attribute.defaultBallSpeed
     , punish = False
