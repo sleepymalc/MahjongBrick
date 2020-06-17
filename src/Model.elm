@@ -100,7 +100,7 @@ init _=
 
 
 generateRow  suit y =
-    List.map (\x-> {suit=suit, size = Vector brickWidth brickHeight, pos = Vector x y ,count=4}) (posXList attribute.bricksNum.x)
+    List.map (\x-> {suit=suit, size = Vector brickWidth brickHeight, pos = Vector x y ,count=2}) (posXList attribute.bricksNum.x)
 
 brickWidth = attribute.range.x/attribute.bricksNum.x
 brickHeight = attribute.range.y/4/attribute.bricksNum.y
@@ -163,8 +163,8 @@ initPlayer =
     
 initPaddle : Paddle
 initPaddle =
-    {  size = {x = 200, y = 20}
-    , pos = Vector (attribute.range.x/2-200/2) (attribute.range.y*2/3+25) 
+    {  size = {x = 100, y = 20}
+    , pos = Vector (attribute.range.x/2-100/2) (attribute.range.y*2/3+25) 
     , speed = 0
     }
 
