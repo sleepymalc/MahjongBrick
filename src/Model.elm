@@ -92,7 +92,7 @@ init _=
     ({ player1 = initPlayer
     , player2 = initPlayer
     , bricks = []
-    , state = Paused--to be update
+    , state = Win Player2
     , size = Vector 0 0
     , audioList = []
     --,{ background = { width=widthRange, height= heightRange, pos={x=0,y=0}}
@@ -108,7 +108,7 @@ posXList n=
     (List.range 0 (n-1)
         |> List.map (\x-> ((toFloat x))*brickWidth))
 posYList = List.range (-attribute.bricksNum.y+1) (attribute.totalBricksNum//attribute.bricksNum.x-attribute.bricksNum.y)
-            |> List.map (\x-> -((toFloat x))*brickHeight)
+            |> List.map (\x-> -((toFloat x))*(brickHeight))
 
 
 --randomList: Random.Generator (List Int)
@@ -122,12 +122,12 @@ initBricks values model=
                 |> List.concat
                 |> List.map2 
                     (\value brick ->
-                        {brick|suit=value}
+                        {brick|suit=(value-1)//4}
                     ) values 
                 |> List.sortBy .suit
                 |> List.indexedMap 
                     (\index brick->
-                        {brick|suit=index}
+                        {brick|suit=(index-1)//4}
                     )
                 |> List.sortBy (\brick ->  brick.pos.y * 10000+ brick.pos.x)
 

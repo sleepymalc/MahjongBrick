@@ -9,18 +9,13 @@ import Html.Attributes exposing (style,src,controls,autoplay,loop)
 import Html.Events exposing (on, onClick, onMouseDown, onMouseUp)
 
 import Model exposing (Model, attribute,State(..))
-import Message exposing (Msg(..))
+import Message exposing (Msg(..),PlayerNum(..))
 import Model exposing (Vector)
 
 
 view : Model -> Html Msg
 view model =
     let
-            gameUIAttribute = 
-                [ width (String.fromFloat (model.size.x*2/5))
-                , height (String.fromFloat model.size.y)
-                , viewBox "0 0 600 800"
-                ]
             renderHtml =
                 case model.state of
                     Playing->
@@ -32,34 +27,92 @@ view model =
                     Paused->
                         [renderStart model]
                     Win player ->
-                        [renderStart model]
+                        [renderOver model player]
+
+            renderSvg = 
+                case model.state of
+                    Playing ->
+                        [ svg
+                            (transformedUI model.size Player1)
+                            (renderPlayerPlaying model.bricks model.player1)
+                        , svg
+                            (transformedUI model.size Player2)
+                            (renderPlayerPlaying model.bricks model.player2)
+                        ]
+                    Paused->
+                        []
+                    Win player ->
+                        case player of 
+                            Player1 ->
+                                [ svg
+                                    (transformedUI model.size Player1)
+                                    (renderPlayerWin model.bricks model.player1)
+                                , svg
+                                    (transformedUI model.size Player2)
+                                    (renderPlayerLose model.bricks model.player2)
+                                ]
+                            Player2 ->
+                                [ svg
+                                    (transformedUI model.size Player1)
+                                    (renderPlayerWin model.bricks model.player1)
+                                , svg
+                                    (transformedUI model.size Player2)
+                                    (renderPlayerLose model.bricks model.player2)
+                                ]
     in
         div
             []
-            [ svg
-                (transform ("translate("++(String.fromFloat (model.size.x/20))++" 0)")
-                :: gameUIAttribute)
-                (renderPlayer model.bricks model.player1)
-            , svg
-                (transform ("translate("++(String.fromFloat (model.size.x*3/20))++" 0)")
-                :: gameUIAttribute)
-                (renderPlayer model.bricks model.player2)
+            [ span[]renderSvg
             , span[]renderHtml
             ]
             
+
+gameUIAttribute size= 
+    [ width (String.fromFloat (size.x*2/5))
+    , height (String.fromFloat size.y)
+    , viewBox "0 0 600 800"
+    ]
+transformedUI size player =
+    case player of
+        Player1 ->
+            transform ("translate("++(String.fromFloat (size.x/20))++" 0)")
+            :: (gameUIAttribute size)
+        Player2 ->
+            transform ("translate("++(String.fromFloat (size.x*3/20))++" 0)")
+            :: (gameUIAttribute size)
 
 renderAudio url =
     audio
         [src url, autoplay True]
         [Html.text "Your browser does not support the audio"]
 
-renderPlayer bricks player = 
+renderPlayerPlaying bricks player = 
     renderbackground
     :: renderLogo
     :: renderPaddle player.paddle
     :: renderBall  player.ball    
     :: renderBricks (player.fallingcard ++ player.handcard)
     ++ renderunBricks (bricks)
+
+
+renderPlayerWin bricks player =
+    renderPlayerPlaying bricks player ++ [renderWin]
+    
+    
+
+
+renderPlayerLose bricks player =
+    renderPlayerPlaying bricks player ++ [renderLose]
+
+
+renderWin =
+    renderImage "img/winPixel.png" Model.attribute.range (Vector 0 0) []
+
+
+
+renderLose =
+    renderImage "img/lose.png" Model.attribute.range (Vector 0 0) []
+
 
 renderBall ball =
     let 
@@ -81,8 +134,6 @@ renderPaddle paddle =
         , y (String.fromFloat paddle.pos.y)
         , width (String.fromFloat paddle.size.x)
         , height (String.fromFloat paddle.size.y)
-        , rx "10"
-        , ry "10"
         , fill "black"
         ]
         []
@@ -95,14 +146,12 @@ renderbackground =
         , y "0"
         , width (String.fromFloat Model.attribute.range.x)
         , height (String.fromFloat Model.attribute.range.y)
-        , rx "10"
-        , ry "10"
-        , fill "#222F53"
+        , fill "#222F53"--"#A87272"--"#D3D3D3"--"#A87272"--"#D4A1A1"--"#D3D3D3"--
         ]
         []
     
 renderunBrick brick =
-    renderImage "img/suit/43.png" brick.size brick.pos [opacity (String.fromFloat ((toFloat brick.count) / 4))]
+    renderImage "img/Monhjong/43.png" brick.size (Vector brick.pos.x (brick.pos.y+10)) [opacity (String.fromFloat ((toFloat brick.count) / 4))]
 
 renderunBricks bricks=
     bricks
@@ -111,7 +160,7 @@ renderunBricks bricks=
 
 
 renderBrick brick =
-    renderImage ("img/suit/"++String.fromInt ((brick.suit-1)//4+1)++".png") brick.size brick.pos []
+    renderImage ("img/Monhjong/"++String.fromInt (brick.suit+1)++".png") brick.size brick.pos []
 
     
 
@@ -157,3 +206,4 @@ renderImage url size pos attr=
         ]
         ++ attr)
     []
+renderOver model player= renderStart model

@@ -9,7 +9,7 @@ animate: Float -> Model ->Model -- Might update: Haven't use time
 animate time model =
     let 
         (vaildBricks,invaildBricks) = model.bricks
-            |> List.partition (\brick-> brick.pos.y>=0)
+            |> List.partition (\brick-> brick.pos.y+brick.size.y >=0)
             
         aftercollide_1=(List.map (\brick-> (collideWith model.player1.ball brick)) vaildBricks)
 

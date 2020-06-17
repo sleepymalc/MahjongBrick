@@ -33,8 +33,8 @@ formPongs bricks =
             Nothing -> 
                 False
             Just brick ->
-                (List.member ((brick.suit-1)//4+1) (List.map (\card-> ((card.suit-1)//4+1)) brick1))
-                && (List.member ((brick.suit-1)//4+1) (List.map (\card-> ((card.suit-1)//4+1)) brick2))
+                (List.member brick.suit (List.map .suit brick1))
+                && (List.member brick.suit (List.map .suit brick2))
                 
 
 
@@ -48,13 +48,13 @@ formKong bricks =
 
 formKongHelper brick bricks =
     if vaildKong brick.suit then
-        (List.member (((brick.suit-1)//4+1)+1) (List.map (\card-> ((card.suit-1)//4+1)) bricks))
-        && (List.member (((brick.suit-1)//4+1)+2) (List.map (\card-> ((card.suit-1)//4+1)) bricks))
+        (List.member (brick.suit+1) (List.map .suit bricks))
+        && (List.member (brick.suit+2) (List.map .suit bricks))
     else 
         False
 
 vaildKong suit =
-    ( ((suit-1)//4+1) <=27 ) && ( modBy 9 ((suit-1)//4+1) /=0 ) && ( modBy 9 ((suit-1)//4+1) /=8 )
+    suit < 27 &&  modBy 9 suit /=7  && modBy 9 suit /=8 
 
 
 
@@ -73,7 +73,7 @@ formChow bricks =
             Nothing -> 
                 False
             Just brick ->
-                List.member ((brick.suit-1)//4+1) (List.map (\card-> ((card.suit-1)//4+1)) brick1)
+                List.member brick.suit (List.map .suit brick1)
                 
         
 dropKong bricks =
@@ -82,7 +82,7 @@ dropKong bricks =
             Nothing -> 
                 0
             Just brick ->
-                ((brick.suit-1)//4+1)
+                brick.suit
     in
         bricks
         |> dropBrick suit1
@@ -92,6 +92,6 @@ dropKong bricks =
 
 dropBrick suit bricks =
     let
-        ( sameBricks,rest ) = List.partition (\brick -> ((brick.suit-1)//4+1) == suit) bricks
+        ( sameBricks,rest ) = List.partition (\brick -> brick.suit == suit) bricks
     in
         rest ++ (List.drop 1 sameBricks)
