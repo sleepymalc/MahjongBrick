@@ -102,7 +102,7 @@ renderbackground =
         []
     
 renderunBrick brick =
-    renderImage "img/suit/43.png" brick.size brick.pos [opacity (String.fromFloat ((toFloat brick.count) / 4))]
+    renderImage "img/suit/43.jpeg" brick.size brick.pos [opacity (String.fromFloat ((toFloat brick.count) / 4))]
 
 renderunBricks bricks=
     bricks
@@ -111,7 +111,8 @@ renderunBricks bricks=
 
 
 renderBrick brick =
-    renderImage ("img/suit/"++String.fromInt ((brick.suit-1)//4+1)++".png") brick.size brick.pos []
+   renderImage ("img/suit/"++String.fromInt ((brick.suit-1)//4+1)++".jpeg") brick.size brick.pos []
+
 
     
 
