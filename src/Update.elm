@@ -76,11 +76,18 @@ update msg model =
                     (model |> animate (min time 25) , Cmd.none )
                 _ ->
                     (model , Cmd.none )
+        ChangePlayersNum num->
+            (model |> setPlayersNum num, Cmd.none )
 
         Noop ->
             ( model, Cmd.none )
 
-
+setPlayersNum num model =
+    let 
+        attrs = model.attrs
+        newAttrs = {attrs|playersNum = num}
+    in
+        {model | attrs = newAttrs}
 
 getDirection moveDirection on =
     if on then
