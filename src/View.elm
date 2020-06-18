@@ -121,12 +121,12 @@ renderPlayerLose bricks player =
 
 
 renderWin =
-    renderImage "img/winPixel.png" Model.attribute.range (Vector 0 0) []
+    renderImage "img/blueTiger/win.png" (Vector (Model.attribute.range.x/2) (Model.attribute.range.y/2)) (Vector 0 (Model.attribute.range.y/2)) []
 
 
 
 renderLose =
-    renderImage "img/lose.png" Model.attribute.range (Vector 0 0) []
+    renderImage "img/blueTiger/lose.png" (Vector (Model.attribute.range.x) (Model.attribute.range.y/2)) (Vector 0 (Model.attribute.range.y/2)) []
 
 
 renderBall ball =
