@@ -31,19 +31,39 @@ subscriptions model =
             onAnimationFrameDelta Tick
           --else
             --Sub.none
-        , onKeyUp (Decode.map (key False) keyCode)
-        , onKeyDown (Decode.map (key True) keyCode)
+        , onKeyUp (Decode.map (key model.state False) keyCode)
+        , onKeyDown (Decode.map (key model.state True) keyCode)
         , onResize Resize
         ]
 
 
 
-key : Bool -> Int -> Msg
-key on keycode =
+--key : Bool -> Int -> Msg
+key state on keycode =
+    case state of
+        Playing ->
+            playingKey on keycode
+        Model.Story _ ->
+            if on then
+                storyKey keycode
+            else
+                Noop
+        _ -> Noop
+
+
+storyKey keycode=
+    case keycode of
+        37 ->
+            Turn -1 
+        39 ->
+            Turn 1 
+        _-> Noop
+
+playingKey on keycode=
     case keycode of
     --Player1
         65 ->
-            Move Player1 Left on
+            Move Player1 Left on     
 
         68 ->
             Move Player1 Right on
@@ -70,4 +90,3 @@ key on keycode =
 
         _ ->
             Noop
-        

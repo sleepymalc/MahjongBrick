@@ -5,7 +5,7 @@ import Svg exposing (..)
 import Svg.Attributes exposing (..)
 
 import Html exposing (Html, button, div, text)
-import Html.Attributes exposing (style,src,controls,autoplay,loop)
+import Html.Attributes exposing (style,src,controls,autoplay,loop,attribute)
 import Html.Events exposing (on, onClick, onMouseDown, onMouseUp)
 
 import Model exposing (..)
@@ -30,8 +30,8 @@ view model =
                     Model.Rule -> 
                         renderRule model
 
-                    Model.Story ->
-                        renderStory model
+                    Model.Story n->
+                        renderStory model n
                     Win player ->
                         renderOver model player
 
@@ -52,21 +52,12 @@ view model =
                                 (renderPlayerPlaying model.bricks model.player2)
                             ]
 
-                    Paused->
-                        []
+                    Paused->[]--[ svg(transformedUI model.size (model.size.x*3/10))[renderLogo]]
                     Model.Rule -> 
                         []
 
-                    Model.Story -> 
-                        [ svg
-                            (transformedUI model.size (model.size.x/20))
-                            [(renderImage ("img/blueTiger/Ming.png") (Vector 600 800) (Vector 0 0) [])
-                            ]
-                        , svg
-                            (transformedUI model.size (model.size.x*3/20))
-                            [(renderImage ("img/blueTiger/Gang.png") (Vector 600 800) (Vector 0 0) [])
-                            ]
-                        ]
+                    Model.Story n-> 
+                        []
                     Win player ->
                         case player of 
                             Player1 ->
@@ -98,6 +89,9 @@ view model =
             , span[]renderHtml
             ]
 
+viewAttrs = []
+
+
 renderState player = 
     let
         size = Vector brickWidth brickHeight
@@ -105,22 +99,27 @@ renderState player =
     in
         case player.state of
             Spring _->
-                [renderImage ("img/Monhjong/38.png") size pos []]
+                [renderImage ("img/suit/38.png") size pos []]
             Summer _->
-                [renderImage ("img/Monhjong/39.png") size pos []]
+                [renderImage ("img/suit/39.png") size pos []]
             Autumn _->
-                [renderImage ("img/Monhjong/40.png") size pos []]
+                [renderImage ("img/suit/40.png") size pos []]
             Winter _->
-                [renderImage ("img/Monhjong/41.png") size pos []]
+                [renderImage ("img/suit/41.png") size pos []]
             AllView _->
-                [renderImage ("img/Monhjong/35.png") size pos []]
+                [renderImage ("img/suit/35.png") size pos []]
             None ->
                 []
             
 
          
-renderRule model=[div[][Html.text "gkd! Rule!"]]
-renderStory model =[]
+renderRule model=[div[][img [width (String.fromFloat model.size.x), height (String.fromFloat model.size.y) ,src "img/rule.jpeg"] []]]
+renderStory model n=[
+    div[]
+    [ img [width (String.fromFloat model.size.x)
+    , height (String.fromFloat model.size.y) 
+    , src ("img/dialog/"++(String.fromFloat (toFloat n))++".png")
+    ] []]]
 
 
 gameUIAttribute size= 
@@ -182,14 +181,15 @@ renderLogo =
     renderImage "img/logo.png" Model.attribute.range (Vector 0 0) []
     
 renderPaddle paddle =
-    rect
+    renderImage "img/paddle3.png" paddle.size paddle.pos []
+    {-rect
         [ x (String.fromFloat paddle.pos.x)
         , y (String.fromFloat paddle.pos.y)
         , width (String.fromFloat paddle.size.x)
         , height (String.fromFloat paddle.size.y)
         , fill "black"
         ]
-        []
+        []-}
         
 
 
@@ -216,7 +216,7 @@ renderunBrick player brick =
                     else
                         44
     in
-    renderImage ("img/Monhjong/"++String.fromInt imgIndex++".png") brick.size (Vector brick.pos.x (brick.pos.y+10)) []
+    renderImage ("img/suit/"++String.fromInt imgIndex++".png") brick.size (Vector brick.pos.x (brick.pos.y+10)) []
 
 renderunBricks player bricks=
     bricks
@@ -225,7 +225,7 @@ renderunBricks player bricks=
 
 
 renderBrick brick =
-    renderImage ("img/Monhjong/"++String.fromInt (brick.suit+1)++".png") brick.size brick.pos []
+    renderImage ("img/suit/"++String.fromInt (brick.suit+1)++".png") brick.size brick.pos []
 
     
 
@@ -265,11 +265,8 @@ renderStart model=
     , renderButton Message.Story "img/button/story.png" size (Vector (model.size.x/2-60) (model.size.y/2-20))
         
     , renderButton Message.Rule "img/button/rule.png" size (Vector (model.size.x/2-60) (model.size.y/2+60))
-    , if model.attrs.playersNum == 1 then
-        renderButton (ChangePlayersNum 2) "img/button/rule.png" size (Vector (model.size.x/2-60) (model.size.y/2+140))
-        else 
-        renderButton (ChangePlayersNum 1) "img/button/rule.png" size (Vector (model.size.x/2-60) (model.size.y/2+140))
-    ]
+    , renderChoosePlayer model.attrs.playersNum size (Vector (model.size.x/2-60) (model.size.y/2+140))]
+    
 
 renderImage url size pos attr=
     Svg.image
@@ -282,4 +279,55 @@ renderImage url size pos attr=
         ++ attr)
     []
 renderOver model player= renderStart model
+
+stylesheet =
+    let
+        tag =
+            "link"
+
+        attrs = 
+            [ Html.Attributes.attribute "Rel" "stylesheet"
+            , Html.Attributes.attribute "property" "stylesheet"
+            , Html.Attributes.attribute "href" "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+            ]
+        
+        children =
+            []
+    in
+        Html.node tag attrs children
+
+renderChoosePlayer chosen size pos= 
+    let
+        (attr1, attr2)= 
+            if chosen == 1 then
+                ( [ class "btn btn-primary"]
+                , [ class "btn btn-second"
+                  , onClick (Message.ChangePlayersNum 2)
+                ])
+            else
+                ( [ class "btn btn-second"
+                  , onClick (Message.ChangePlayersNum 1)]
+                , [ class "btn btn-primary"
+                ])
+        attrs = 
+            [ Html.Attributes.style "left" ((String.fromFloat pos.x)++"px")
+            , Html.Attributes.style "top" ((String.fromFloat pos.y)++"px")
+            , Html.Attributes.style "width" "80px"
+            , Html.Attributes.style "height" "40px"]
+        
+
+    in
+    div [ class "btn-group"]
+    [
+        stylesheet
+        ,
+        button 
+        (attrs ++ attr1)
+        [ Html.text "1-Player"]
+        ,
+        button 
+        (attrs ++ attr2)
+        [ Html.text "2-Players"]
+        
+    ]
 

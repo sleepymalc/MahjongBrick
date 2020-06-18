@@ -42,7 +42,7 @@ update msg model =
 
         Message.Story ->
             ( { model
-                | state = Model.Story
+                | state = Model.Story 1
                 , player1 = model.player1 |> setBallSpeed Model.attribute.defaultBallSpeed 
                 , player2 = model.player2 |> setBallSpeed Model.attribute.defaultBallSpeed
               }
@@ -76,6 +76,17 @@ update msg model =
                     (model |> animate (min time 25) , Cmd.none )
                 _ ->
                     (model , Cmd.none )
+
+        Turn moveDirection ->
+            case model.state of
+                Model.Story n ->
+                    if (n+moveDirection) <= 17 && (n+moveDirection) >=1 then
+                        ({model | state = Model.Story (n+moveDirection)} , Cmd.none )
+                    else ( model, Cmd.none )
+                _ ->
+                    ( model, Cmd.none )
+
+                    
         ChangePlayersNum num->
             (model |> setPlayersNum num, Cmd.none )
 

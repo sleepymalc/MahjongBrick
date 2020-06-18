@@ -35,7 +35,7 @@ type alias Brick =
 type State
     = Paused
     | Rule
-    | Story
+    | Story Int
     | Playing
     | Win PlayerNum
 

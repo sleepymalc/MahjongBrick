@@ -17,3 +17,4 @@ type Msg
     | NewBricks (List Int)
     | MoveHandcard PlayerNum MoveDirection Bool
     | ChangePlayersNum Int
+    | Turn Int
