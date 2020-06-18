@@ -45,24 +45,26 @@ animate time model =
             else 
                 model.audioList
 
-        player1 = model.player1
-                |> tickState (time/1000)
-                |> updateChosenCard
-                |> catchHandcard
-                |> movePaddle time
-                |> moveBall model.state vaildBricks
-                |> moveFallingcard
-                |> addFallingcard eliminated_1
-                
+        player1 = if model.attrs.playersNum == 2 then
+                    model.player1
+                        |> tickState (time/1000)
+                        |> updateChosenCard model.attrs.handcardNum
+                        |> catchHandcard
+                        |> movePaddle time
+                        |> moveBall model.state vaildBricks
+                        |> moveFallingcard
+                        |> addFallingcard eliminated_1
+                else model.player1
 
         player2 = model.player2
-                |> tickState (time/1000)
-                |> updateChosenCard
-                |> catchHandcard
-                |> movePaddle time
-                |> moveBall model.state vaildBricks
-                |> moveFallingcard
-                |> addFallingcard eliminated_2
+                    |> tickState (time/1000)
+                    |> updateChosenCard model.attrs.handcardNum
+                    |> catchHandcard
+                    |> movePaddle time
+                    |> moveBall model.state vaildBricks
+                    |> moveFallingcard
+                    |> addFallingcard eliminated_2
+                
                 
         (newPlayer1 , newPlayer2) = applySkill player1 player2
         
@@ -107,9 +109,9 @@ getHandcard handcard card=
 
 
 -- updateChosenCard
-updateChosenCard player =
+updateChosenCard handcardNum player =
     { player
-    | chosenCard = modBy Model.attribute.handcardNum (player.chosenCard + player.moveHandcard)}
+    | chosenCard = modBy handcardNum (player.chosenCard + player.moveHandcard)}
 
 
 -- addFallingcard

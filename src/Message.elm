@@ -16,3 +16,4 @@ type Msg
     | Story
     | NewBricks (List Int)
     | MoveHandcard PlayerNum MoveDirection Bool
+    | ChangePlayersNum Int

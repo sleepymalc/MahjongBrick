@@ -87,18 +87,22 @@ type alias Model =
     , state: State
     , size: Size
     , audioList: List String
+    , attrs: CustomAttribute
     --, view: Bool
     --background : Background
     }
 
+type alias CustomAttribute =
+    { playersNum: Int
+    , handcardNum: Int
+    }
+
 attribute =
-    { playersNum = 2
-    , range = Vector 600 800
+    { range = Vector 600 800
     , bricksNum = Vector 13 3--need change?
-    , totalBricksNum = 144
+    , totalBricksNum = 42 * 4
     , defaultBallSpeed =Vector 3 -2
     , handcardPosY = 650
-    , handcardNum = 13
     , brickCount = 4
     , paddleAccelaration = 0.01---1 in Update
     , brickSpeed = 1
@@ -115,6 +119,7 @@ init _=
     , state = Paused
     , size = Vector 0 0
     , audioList = []
+    , attrs = initAttrs
     --,{ background = { width=widthRange, height= heightRange, pos={x=0,y=0}}
     },Task.perform GetViewport getViewport)
 
@@ -157,8 +162,8 @@ initBricks values model=
                     )
                 |> List.sortBy (\brick ->  brick.pos.y * 10000+ brick.pos.x)
 
-        (player1, rest) = deal bricks model.player1
-        (player2, newrest) = deal rest model.player2
+        (player1, rest) = deal model.attrs.handcardNum bricks model.player1 
+        (player2, newrest) = deal model.attrs.handcardNum rest model.player2
     in
         { model
         | player1 = player1
@@ -166,13 +171,18 @@ initBricks values model=
         , bricks = newrest}
 
 
-deal bricks player =
+deal handcardNum bricks player =
     let 
-        handcard = List.take attribute.handcardNum bricks
-        newBricks = List.drop attribute.handcardNum bricks
+        handcard = List.take handcardNum bricks
+        newBricks = List.drop handcardNum bricks
     in 
         ({player|handcard = handcard}, newBricks)
-    
+
+initAttrs : CustomAttribute
+initAttrs = 
+    { playersNum = 2
+    , handcardNum= 13
+    }
 
 initPlayer : Player
 initPlayer = 

@@ -8,11 +8,9 @@ import Html exposing (Html, button, div, text)
 import Html.Attributes exposing (style,src,controls,autoplay,loop)
 import Html.Events exposing (on, onClick, onMouseDown, onMouseUp)
 
-import Model exposing (Model, attribute,State(..))
+import Model exposing (..)
 import Message exposing (Msg(..),PlayerNum(..))
-import Model exposing (Vector)
 import Paddle exposing (partPaddle)
-import Model exposing (PlayingState(..))
 
 
 view : Model -> Html Msg
@@ -40,60 +38,99 @@ view model =
             renderSvg = 
                 case model.state of
                     Playing ->
-                        [ svg
-                            (transformedUI model.size Player1)
-                            (renderPlayerPlaying model.bricks model.player1)
-                        , svg
-                            (transformedUI model.size Player2)
-                            (renderPlayerPlaying model.bricks model.player2)
-                        ]
+                        if model.attrs.playersNum == 2 then
+                            [ svg
+                                (transformedUI model.size (model.size.x/20))
+                                (renderPlayerPlaying model.bricks model.player1)
+                            , svg
+                                (transformedUI model.size (model.size.x*3/20))
+                                (renderPlayerPlaying model.bricks model.player2)
+                            ]
+                        else 
+                            [ svg
+                                (transformedUI model.size (model.size.x*3/10))
+                                (renderPlayerPlaying model.bricks model.player2)
+                            ]
+
                     Paused->
                         []
                     Model.Rule -> 
                         []
 
                     Model.Story -> 
-                        []
+                        [ svg
+                            (transformedUI model.size (model.size.x/20))
+                            [(renderImage ("img/blueTiger/Ming.png") (Vector 600 800) (Vector 0 0) [])
+                            ]
+                        , svg
+                            (transformedUI model.size (model.size.x*3/20))
+                            [(renderImage ("img/blueTiger/Gang.png") (Vector 600 800) (Vector 0 0) [])
+                            ]
+                        ]
                     Win player ->
                         case player of 
                             Player1 ->
                                 [ svg
-                                    (transformedUI model.size Player1)
+                                    (transformedUI model.size (model.size.x/20))
                                     (renderPlayerWin model.bricks model.player1)
                                 , svg
-                                    (transformedUI model.size Player2)
+                                    (transformedUI model.size (model.size.x*3/20))
                                     (renderPlayerLose model.bricks model.player2)
                                 ]
                             Player2 ->
-                                [ svg
-                                    (transformedUI model.size Player1)
-                                    (renderPlayerWin model.bricks model.player1)
-                                , svg
-                                    (transformedUI model.size Player2)
-                                    (renderPlayerLose model.bricks model.player2)
-                                ]
+                                if model.attrs.playersNum == 2 then
+                                    [ svg
+                                        (transformedUI model.size (model.size.x/20))
+                                        (renderPlayerLose model.bricks model.player1)
+                                    , svg
+                                        (transformedUI model.size (model.size.x*3/20))
+                                        (renderPlayerWin model.bricks model.player2)
+                                    ]
+                                else
+                                    [ svg
+                                        (transformedUI model.size (model.size.x*3/10))
+                                        (renderPlayerWin model.bricks model.player2)
+                                    ]
     in
         div
             []
             [ span[]renderSvg
             , span[]renderHtml
             ]
+
+renderState player = 
+    let
+        size = Vector brickWidth brickHeight
+        pos = Vector (600-size.x) (800 - size.y)
+    in
+        case player.state of
+            Spring _->
+                [renderImage ("img/Monhjong/38.png") size pos []]
+            Summer _->
+                [renderImage ("img/Monhjong/39.png") size pos []]
+            Autumn _->
+                [renderImage ("img/Monhjong/40.png") size pos []]
+            Winter _->
+                [renderImage ("img/Monhjong/41.png") size pos []]
+            AllView _->
+                [renderImage ("img/Monhjong/35.png") size pos []]
+            None ->
+                []
             
-renderRule model=[]
+
+         
+renderRule model=[div[][Html.text "gkd! Rule!"]]
 renderStory model =[]
+
+
 gameUIAttribute size= 
     [ width (String.fromFloat (size.x*2/5))
     , height (String.fromFloat size.y)
     , viewBox "0 0 600 800"
     ]
-transformedUI size player =
-    case player of
-        Player1 ->
-            transform ("translate("++(String.fromFloat (size.x/20))++" 0)")
-            :: (gameUIAttribute size)
-        Player2 ->
-            transform ("translate("++(String.fromFloat (size.x*3/20))++" 0)")
-            :: (gameUIAttribute size)
+transformedUI size setoff =
+    transform ("translate("++(String.fromFloat setoff)++" 0)")
+    :: (gameUIAttribute size)
 
 renderAudio url =
     audio
@@ -107,6 +144,7 @@ renderPlayerPlaying bricks player =
     :: renderPaddle player.paddle
     :: renderPaddle (partPaddle player.paddle)
     :: renderBricks (player.fallingcard ++ player.handcard)
+    ++ renderState player
     ++ renderunBricks player (bricks)
 
 
@@ -196,65 +234,42 @@ renderBricks bricks =
     |> List.filter (\brick->  brick.pos.y+brick.size.y >0)
     |> List.map renderBrick 
 
+renderButton msg url size pos= 
+    button
+        [  Html.Attributes.style "border" "0"
+        , Html.Attributes.style "bottom" "30px"
+        , Html.Attributes.style "cursor" "pointer"
+        , Html.Attributes.style "display" "block"
+        , Html.Attributes.style "height" "60px"
+        , Html.Attributes.style "left" "30px"
+        , Html.Attributes.style "line-height" "60px"
+        , Html.Attributes.style "outline" "none"
+        , Html.Attributes.style "padding" "0"
+        -- Display at center
+        , Html.Attributes.style "position" "absolute"
+        , Html.Attributes.style "left" ((String.fromFloat pos.x)++"px")
+        , Html.Attributes.style "top" ((String.fromFloat pos.y)++"px")
+        -- 
+        , Html.Attributes.style "width" "120px"
+        , onClick msg
+        ]
+        [ Html.img [src url
+        , height ((String.fromFloat size.y)++"px") 
+        , width ((String.fromFloat size.x)++"px")][] ]
 
 renderStart model=
-    [button
-        [  Html.Attributes.style "border" "0"
-        , Html.Attributes.style "bottom" "30px"
-        , Html.Attributes.style "cursor" "pointer"
-        , Html.Attributes.style "display" "block"
-        , Html.Attributes.style "height" "60px"
-        , Html.Attributes.style "left" "30px"
-        , Html.Attributes.style "line-height" "60px"
-        , Html.Attributes.style "outline" "none"
-        , Html.Attributes.style "padding" "0"
-        -- Display at center
-        , Html.Attributes.style "position" "absolute"
-        , Html.Attributes.style "left" ((String.fromFloat (model.size.x/2-60))++"px")
-        , Html.Attributes.style "top" ((String.fromFloat (model.size.y/2-100))++"px")
-        -- 
-        , Html.Attributes.style "width" "120px"
-        , onClick Start
-        ]
-        [ Html.img [src "img/button/start.png", height "60px" , width "120px"][] ]
-    , button
-        [  Html.Attributes.style "border" "0"
-        , Html.Attributes.style "bottom" "30px"
-        , Html.Attributes.style "cursor" "pointer"
-        , Html.Attributes.style "display" "block"
-        , Html.Attributes.style "height" "60px"
-        , Html.Attributes.style "left" "30px"
-        , Html.Attributes.style "line-height" "60px"
-        , Html.Attributes.style "outline" "none"
-        , Html.Attributes.style "padding" "0"
-        -- Display at center
-        , Html.Attributes.style "position" "absolute"
-        , Html.Attributes.style "left" ((String.fromFloat (model.size.x/2-60))++"px")
-        , Html.Attributes.style "top" ((String.fromFloat (model.size.y/2-30))++"px")
-        -- 
-        , Html.Attributes.style "width" "120px"
-        , onClick Message.Story
-        ]
-        [ Html.img [src "img/button/story.png", height "60px" , width "120px"][] ]
-    , button
-        [  Html.Attributes.style "border" "0"
-        , Html.Attributes.style "bottom" "30px"
-        , Html.Attributes.style "cursor" "pointer"
-        , Html.Attributes.style "display" "block"
-        , Html.Attributes.style "height" "60px"
-        , Html.Attributes.style "left" "30px"
-        , Html.Attributes.style "line-height" "60px"
-        , Html.Attributes.style "outline" "none"
-        , Html.Attributes.style "padding" "0"
-        -- Display at center
-        , Html.Attributes.style "position" "absolute"
-        , Html.Attributes.style "left" ((String.fromFloat (model.size.x/2-60))++"px")
-        , Html.Attributes.style "top" ((String.fromFloat (model.size.y/2+40))++"px")
-        -- 
-        , Html.Attributes.style "width" "120px"
-        , onClick Message.Rule
-        ]
-        [ Html.img [src "img/button/rule.png", height "60px" , width "120px"][] ]]
+    let
+        size = Vector 120 60
+    in
+    [ renderButton Start "img/button/start.png" size (Vector (model.size.x/2-60) (model.size.y/2-100))
+    , renderButton Message.Story "img/button/story.png" size (Vector (model.size.x/2-60) (model.size.y/2-20))
+        
+    , renderButton Message.Rule "img/button/rule.png" size (Vector (model.size.x/2-60) (model.size.y/2+60))
+    , if model.attrs.playersNum == 1 then
+        renderButton (ChangePlayersNum 2) "img/button/rule.png" size (Vector (model.size.x/2-60) (model.size.y/2+140))
+        else 
+        renderButton (ChangePlayersNum 1) "img/button/rule.png" size (Vector (model.size.x/2-60) (model.size.y/2+140))
+    ]
 
 renderImage url size pos attr=
     Svg.image
@@ -267,3 +282,4 @@ renderImage url size pos attr=
         ++ attr)
     []
 renderOver model player= renderStart model
+
