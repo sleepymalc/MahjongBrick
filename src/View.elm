@@ -166,10 +166,6 @@ renderbackground =
         ]
         []
     
-<<<<<<< HEAD
-renderunBrick brick =
-    renderImage "img/suit/43.jpeg" brick.size brick.pos [opacity (String.fromFloat ((toFloat brick.count) / 4))]
-=======
 renderunBrick player brick =
     let
         imgIndex = 
@@ -183,7 +179,6 @@ renderunBrick player brick =
                         44
     in
     renderImage ("img/Monhjong/"++String.fromInt imgIndex++".png") brick.size (Vector brick.pos.x (brick.pos.y+10)) []
->>>>>>> 3691b318b3e0f0c23e19b757ed7b6778a63cf26b
 
 renderunBricks player bricks=
     bricks
@@ -192,12 +187,7 @@ renderunBricks player bricks=
 
 
 renderBrick brick =
-<<<<<<< HEAD
-   renderImage ("img/suit/"++String.fromInt ((brick.suit-1)//4+1)++".jpeg") brick.size brick.pos []
-
-=======
     renderImage ("img/Monhjong/"++String.fromInt (brick.suit+1)++".png") brick.size brick.pos []
->>>>>>> 3691b318b3e0f0c23e19b757ed7b6778a63cf26b
 
     
 
