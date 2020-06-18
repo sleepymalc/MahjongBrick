@@ -9,18 +9,15 @@ import Html.Attributes exposing (style,src,controls,autoplay,loop)
 import Html.Events exposing (on, onClick, onMouseDown, onMouseUp)
 
 import Model exposing (Model, attribute,State(..))
-import Message exposing (Msg(..))
+import Message exposing (Msg(..),PlayerNum(..))
 import Model exposing (Vector)
+import Paddle exposing (partPaddle)
+import Model exposing (PlayingState(..))
 
 
 view : Model -> Html Msg
 view model =
     let
-            gameUIAttribute = 
-                [ width (String.fromFloat (model.size.x*2/5))
-                , height (String.fromFloat model.size.y)
-                , viewBox "0 0 600 800"
-                ]
             renderHtml =
                 case model.state of
                     Playing->
@@ -30,41 +27,112 @@ view model =
                         :: List.map renderAudio model.audioList
 
                     Paused->
-                        [renderStart model]
+                        renderStart model
+                    
+                    Model.Rule -> 
+                        renderRule model
+
+                    Model.Story ->
+                        renderStory model
                     Win player ->
-                        [renderStart model]
+                        renderOver model player
+
+            renderSvg = 
+                case model.state of
+                    Playing ->
+                        [ svg
+                            (transformedUI model.size Player1)
+                            (renderPlayerPlaying model.bricks model.player1)
+                        , svg
+                            (transformedUI model.size Player2)
+                            (renderPlayerPlaying model.bricks model.player2)
+                        ]
+                    Paused->
+                        []
+                    Model.Rule -> 
+                        []
+
+                    Model.Story -> 
+                        []
+                    Win player ->
+                        case player of 
+                            Player1 ->
+                                [ svg
+                                    (transformedUI model.size Player1)
+                                    (renderPlayerWin model.bricks model.player1)
+                                , svg
+                                    (transformedUI model.size Player2)
+                                    (renderPlayerLose model.bricks model.player2)
+                                ]
+                            Player2 ->
+                                [ svg
+                                    (transformedUI model.size Player1)
+                                    (renderPlayerWin model.bricks model.player1)
+                                , svg
+                                    (transformedUI model.size Player2)
+                                    (renderPlayerLose model.bricks model.player2)
+                                ]
     in
         div
             []
-            [ svg
-                (transform ("translate("++(String.fromFloat (model.size.x/20))++" 0)")
-                :: gameUIAttribute)
-                (renderPlayer model.bricks model.player1)
-            , svg
-                (transform ("translate("++(String.fromFloat (model.size.x*3/20))++" 0)")
-                :: gameUIAttribute)
-                (renderPlayer model.bricks model.player2)
+            [ span[]renderSvg
             , span[]renderHtml
             ]
             
+renderRule model=[]
+renderStory model =[]
+gameUIAttribute size= 
+    [ width (String.fromFloat (size.x*2/5))
+    , height (String.fromFloat size.y)
+    , viewBox "0 0 600 800"
+    ]
+transformedUI size player =
+    case player of
+        Player1 ->
+            transform ("translate("++(String.fromFloat (size.x/20))++" 0)")
+            :: (gameUIAttribute size)
+        Player2 ->
+            transform ("translate("++(String.fromFloat (size.x*3/20))++" 0)")
+            :: (gameUIAttribute size)
 
 renderAudio url =
     audio
         [src url, autoplay True]
         [Html.text "Your browser does not support the audio"]
 
-renderPlayer bricks player = 
+renderPlayerPlaying bricks player = 
     renderbackground
     :: renderLogo
-    :: renderPaddle player.paddle
     :: renderBall  player.ball    
+    :: renderPaddle player.paddle
+    :: renderPaddle (partPaddle player.paddle)
     :: renderBricks (player.fallingcard ++ player.handcard)
-    ++ renderunBricks (bricks)
+    ++ renderunBricks player (bricks)
+
+
+renderPlayerWin bricks player =
+    renderPlayerPlaying bricks player ++ [renderWin]
+    
+    
+
+
+renderPlayerLose bricks player =
+    renderPlayerPlaying bricks player ++ [renderLose]
+
+
+renderWin =
+    renderImage "img/blueTiger/win.png" (Vector (Model.attribute.range.x/2) (Model.attribute.range.y/2)) (Vector 0 (Model.attribute.range.y/2)) []
+
+
+
+renderLose =
+    renderImage "img/blueTiger/lose.png" (Vector (Model.attribute.range.x) (Model.attribute.range.y/2)) (Vector 0 (Model.attribute.range.y/2)) []
+
 
 renderBall ball =
     let 
         ref = 
-            if ball.speed == {x=0,y=0} then 
+            if ball.speed == Vector 0 0 then 
                 "img/dice/dice_"++(String.fromInt 1)++".png"
             else 
                 "img/dice/dice_rolling_"++(String.fromInt (ball.imgIndex+1))++".png"
@@ -81,11 +149,10 @@ renderPaddle paddle =
         , y (String.fromFloat paddle.pos.y)
         , width (String.fromFloat paddle.size.x)
         , height (String.fromFloat paddle.size.y)
-        , rx "10"
-        , ry "10"
         , fill "black"
         ]
         []
+        
 
 
     
@@ -95,58 +162,109 @@ renderbackground =
         , y "0"
         , width (String.fromFloat Model.attribute.range.x)
         , height (String.fromFloat Model.attribute.range.y)
-        , rx "10"
-        , ry "10"
-        , fill "#222F53"
+        , fill "#222F53"--"#A87272"--"#D3D3D3"--"#A87272"--"#D4A1A1"--"#D3D3D3"--
         ]
         []
     
+<<<<<<< HEAD
 renderunBrick brick =
     renderImage "img/suit/43.jpeg" brick.size brick.pos [opacity (String.fromFloat ((toFloat brick.count) / 4))]
+=======
+renderunBrick player brick =
+    let
+        imgIndex = 
+            case player.state of
+                AllView _->
+                    brick.suit+1
+                _ -> 
+                    if brick.count== Model.attribute.brickCount then
+                        43
+                    else
+                        44
+    in
+    renderImage ("img/Monhjong/"++String.fromInt imgIndex++".png") brick.size (Vector brick.pos.x (brick.pos.y+10)) []
+>>>>>>> 3691b318b3e0f0c23e19b757ed7b6778a63cf26b
 
-renderunBricks bricks=
+renderunBricks player bricks=
     bricks
     |> List.filter(\brick->brick.pos.y>=0)
-    |> List.map renderunBrick
+    |> List.map (renderunBrick player)
 
 
 renderBrick brick =
+<<<<<<< HEAD
    renderImage ("img/suit/"++String.fromInt ((brick.suit-1)//4+1)++".jpeg") brick.size brick.pos []
 
+=======
+    renderImage ("img/Monhjong/"++String.fromInt (brick.suit+1)++".png") brick.size brick.pos []
+>>>>>>> 3691b318b3e0f0c23e19b757ed7b6778a63cf26b
 
     
 
 renderBricks bricks =
     bricks
-    |> List.filter (\brick-> brick.pos.y>=0)
+    |> List.filter (\brick->  brick.pos.y+brick.size.y >0)
     |> List.map renderBrick 
 
 
 renderStart model=
-            button
-                [ Html.Attributes.style "background" "#34495f"
-                , Html.Attributes.style "border" "0"
-                , Html.Attributes.style "bottom" "30px"
-                , Html.Attributes.style "color" "#fff"
-                , Html.Attributes.style "cursor" "pointer"
-                , Html.Attributes.style "display" "block"
-                , Html.Attributes.style "font-family" "Helvetica, Arial, sans-serif"
-                , Html.Attributes.style "font-size" "18px"
-                , Html.Attributes.style "font-weight" "300"
-                , Html.Attributes.style "height" "60px"
-                , Html.Attributes.style "left" "30px"
-                , Html.Attributes.style "line-height" "60px"
-                , Html.Attributes.style "outline" "none"
-                , Html.Attributes.style "padding" "0"
-                -- Display at center
-                , Html.Attributes.style "position" "absolute"
-                , Html.Attributes.style "left" ((String.fromFloat (model.size.x/2-60))++"px")
-                , Html.Attributes.style "top" ((String.fromFloat (model.size.y/2-30))++"px")
-                -- 
-                , Html.Attributes.style "width" "120px"
-                , onClick Start
-                ]
-                [ Html.text "Start" ]
+    [button
+        [  Html.Attributes.style "border" "0"
+        , Html.Attributes.style "bottom" "30px"
+        , Html.Attributes.style "cursor" "pointer"
+        , Html.Attributes.style "display" "block"
+        , Html.Attributes.style "height" "60px"
+        , Html.Attributes.style "left" "30px"
+        , Html.Attributes.style "line-height" "60px"
+        , Html.Attributes.style "outline" "none"
+        , Html.Attributes.style "padding" "0"
+        -- Display at center
+        , Html.Attributes.style "position" "absolute"
+        , Html.Attributes.style "left" ((String.fromFloat (model.size.x/2-60))++"px")
+        , Html.Attributes.style "top" ((String.fromFloat (model.size.y/2-100))++"px")
+        -- 
+        , Html.Attributes.style "width" "120px"
+        , onClick Start
+        ]
+        [ Html.img [src "img/button/start.png", height "60px" , width "120px"][] ]
+    , button
+        [  Html.Attributes.style "border" "0"
+        , Html.Attributes.style "bottom" "30px"
+        , Html.Attributes.style "cursor" "pointer"
+        , Html.Attributes.style "display" "block"
+        , Html.Attributes.style "height" "60px"
+        , Html.Attributes.style "left" "30px"
+        , Html.Attributes.style "line-height" "60px"
+        , Html.Attributes.style "outline" "none"
+        , Html.Attributes.style "padding" "0"
+        -- Display at center
+        , Html.Attributes.style "position" "absolute"
+        , Html.Attributes.style "left" ((String.fromFloat (model.size.x/2-60))++"px")
+        , Html.Attributes.style "top" ((String.fromFloat (model.size.y/2-30))++"px")
+        -- 
+        , Html.Attributes.style "width" "120px"
+        , onClick Message.Story
+        ]
+        [ Html.img [src "img/button/story.png", height "60px" , width "120px"][] ]
+    , button
+        [  Html.Attributes.style "border" "0"
+        , Html.Attributes.style "bottom" "30px"
+        , Html.Attributes.style "cursor" "pointer"
+        , Html.Attributes.style "display" "block"
+        , Html.Attributes.style "height" "60px"
+        , Html.Attributes.style "left" "30px"
+        , Html.Attributes.style "line-height" "60px"
+        , Html.Attributes.style "outline" "none"
+        , Html.Attributes.style "padding" "0"
+        -- Display at center
+        , Html.Attributes.style "position" "absolute"
+        , Html.Attributes.style "left" ((String.fromFloat (model.size.x/2-60))++"px")
+        , Html.Attributes.style "top" ((String.fromFloat (model.size.y/2+40))++"px")
+        -- 
+        , Html.Attributes.style "width" "120px"
+        , onClick Message.Rule
+        ]
+        [ Html.img [src "img/button/rule.png", height "60px" , width "120px"][] ]]
 
 renderImage url size pos attr=
     Svg.image
@@ -158,3 +276,4 @@ renderImage url size pos attr=
         ]
         ++ attr)
     []
+renderOver model player= renderStart model

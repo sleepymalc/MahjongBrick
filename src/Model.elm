@@ -29,10 +29,13 @@ type alias Brick =
     , size: Size
     , pos: Pos
     , count: Int
+    , speed: Speed
     }
 
 type State
     = Paused
+    | Rule
+    | Story
     | Playing
     | Win PlayerNum
 
@@ -47,7 +50,8 @@ type alias Ball =
 type alias Paddle =
     { size: Size
     , pos: Pos
-    , speed: Float
+    , speed: Speed
+    , accelaration: Vector Float
     }
 
 type alias Background =
@@ -65,7 +69,17 @@ type alias Player =
     , chosenCard: Int 
     , moveHandcard: Int
     , droppedcard: List Brick 
+    , state: PlayingState
     }
+type PlayingState =
+    Spring Float
+    | Summer Float
+    | Autumn Float
+    | Winter Float
+    | AllView Float
+    | None
+
+
 type alias Model =
     { player1: Player
     , player2: Player 
@@ -73,17 +87,23 @@ type alias Model =
     , state: State
     , size: Size
     , audioList: List String
+    --, view: Bool
     --background : Background
     }
 
 attribute =
     { playersNum = 2
     , range = Vector 600 800
-    , bricksNum = Vector 12 3--need change?
+    , bricksNum = Vector 13 3--need change?
     , totalBricksNum = 144
     , defaultBallSpeed =Vector 3 -2
     , handcardPosY = 650
     , handcardNum = 13
+    , brickCount = 4
+    , paddleAccelaration = 0.01---1 in Update
+    , brickSpeed = 1
+    , maxPaddleSpeedX = 4
+    , fiction = Vector 1 0
     }
 
     
@@ -92,7 +112,7 @@ init _=
     ({ player1 = initPlayer
     , player2 = initPlayer
     , bricks = []
-    , state = Paused--to be update
+    , state = Paused
     , size = Vector 0 0
     , audioList = []
     --,{ background = { width=widthRange, height= heightRange, pos={x=0,y=0}}
@@ -100,7 +120,13 @@ init _=
 
 
 generateRow  suit y =
-    List.map (\x-> {suit=suit, size = Vector brickWidth brickHeight, pos = Vector x y ,count=2}) (posXList attribute.bricksNum.x)
+    List.map (\x-> 
+        { suit=suit
+        , size = Vector brickWidth brickHeight
+        , pos = Vector x y 
+        , count=attribute.brickCount
+        , speed = Vector 0 attribute.brickSpeed
+        }) (posXList attribute.bricksNum.x)
 
 brickWidth = attribute.range.x/attribute.bricksNum.x
 brickHeight = attribute.range.y/4/attribute.bricksNum.y
@@ -108,7 +134,7 @@ posXList n=
     (List.range 0 (n-1)
         |> List.map (\x-> ((toFloat x))*brickWidth))
 posYList = List.range (-attribute.bricksNum.y+1) (attribute.totalBricksNum//attribute.bricksNum.x-attribute.bricksNum.y)
-            |> List.map (\x-> -((toFloat x))*brickHeight)
+            |> List.map (\x-> -((toFloat x))*(brickHeight))
 
 
 --randomList: Random.Generator (List Int)
@@ -122,12 +148,12 @@ initBricks values model=
                 |> List.concat
                 |> List.map2 
                     (\value brick ->
-                        {brick|suit=value}
+                        {brick|suit=(value-1)//4}
                     ) values 
                 |> List.sortBy .suit
                 |> List.indexedMap 
                     (\index brick->
-                        {brick|suit=index}
+                        {brick|suit=(index-1)//4}
                     )
                 |> List.sortBy (\brick ->  brick.pos.y * 10000+ brick.pos.x)
 
@@ -159,18 +185,20 @@ initPlayer =
     , chosenCard = 0
     , moveHandcard = 0
     , droppedcard = []
+    , state = None
     }
     
 initPaddle : Paddle
 initPaddle =
-    {  size = {x = 100, y = 20}
-    , pos = Vector (attribute.range.x/2-100/2) (attribute.range.y*2/3+25) 
-    , speed = 0
+    { size = Vector 200 20
+    , pos = Vector (attribute.range.x/2-200/2) (attribute.range.y*2/3+25) 
+    , speed = Vector 0 0
+    , accelaration = Vector 0 0
     }
 
 initBall : Ball
 initBall =
-    { size = {x = 20, y = 20}
+    { size = Vector 20 20
     , pos = Vector (attribute.range.x/2-30/2) (attribute.range.y*2/3) 
     , speed = attribute.defaultBallSpeed
     , punish = False

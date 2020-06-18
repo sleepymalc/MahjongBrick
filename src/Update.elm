@@ -31,6 +31,24 @@ update msg model =
             , Random.generate NewBricks Model.randomList
             )
 
+        Message.Rule -> 
+            ( { model
+                | state = Model.Rule
+                , player1 = model.player1 |> setBallSpeed Model.attribute.defaultBallSpeed 
+                , player2 = model.player2 |> setBallSpeed Model.attribute.defaultBallSpeed
+              }
+            , Random.generate NewBricks Model.randomList
+            )
+
+        Message.Story ->
+            ( { model
+                | state = Model.Story
+                , player1 = model.player1 |> setBallSpeed Model.attribute.defaultBallSpeed 
+                , player2 = model.player2 |> setBallSpeed Model.attribute.defaultBallSpeed
+              }
+            , Random.generate NewBricks Model.randomList
+            )
+
         NewBricks values->
             ( initBricks values model
             , Cmd.none
@@ -39,30 +57,32 @@ update msg model =
         Move player moveDirection on->
             case player of
                 Player1 ->
-                    ({model|player1=model.player1 |> setPaddleSpeed ( getSpeedDirection moveDirection on *8 ) },Cmd.none)
+                    ({model|player1=model.player1 |> setPaddleAccelaration (Vector (( getDirection moveDirection on )*2) 0) },Cmd.none)
                 Player2 ->
-                    ({model|player2=model.player2 |> setPaddleSpeed ( getSpeedDirection moveDirection on *8 ) },Cmd.none)
+                    ({model|player2=model.player2 |> setPaddleAccelaration (Vector (( getDirection moveDirection on )*2) 0) },Cmd.none)
 
         MoveHandcard player moveDirection on->
             case player of
                 Player1 ->
-                    ({model|player1=model.player1 |> moveChosencard (getSpeedDirection moveDirection on) },Cmd.none)
+                    ({model|player1=model.player1 |> moveChosencard (getDirection moveDirection on) },Cmd.none)
                 Player2 ->
-                    ({model|player2=model.player2 |> moveChosencard (getSpeedDirection moveDirection on) },Cmd.none)
+                    ({model|player2=model.player2 |> moveChosencard (getDirection moveDirection on) },Cmd.none)
 
         Tick time ->
             case model.state of
-                Win _ ->
-                    (model , Cmd.none )
                 Playing ->
-                    (model |> animate time , Cmd.none )
+                    (model |> animate (min time 25) , Cmd.none )
                 Paused ->
-                    (model |> animate time , Cmd.none )
+                    (model |> animate (min time 25) , Cmd.none )
+                _ ->
+                    (model , Cmd.none )
 
         Noop ->
             ( model, Cmd.none )
 
-getSpeedDirection moveDirection on =
+
+
+getDirection moveDirection on =
     if on then
         case moveDirection of
             Left ->
@@ -76,11 +96,11 @@ moveChosencard: Int -> Player -> Player
 moveChosencard x player =
     {player|chosenCard = player.chosenCard+x}
 
-setPaddleSpeed: Float -> Player -> Player--helper
-setPaddleSpeed speed player =
+setPaddleAccelaration: Vector Float -> Player -> Player--helper
+setPaddleAccelaration accelaration player =
     let
         paddle = player.paddle
-        newPaddle = {paddle| speed=speed}
+        newPaddle = {paddle| accelaration=accelaration}
     in
         {player|paddle=newPaddle}
 
