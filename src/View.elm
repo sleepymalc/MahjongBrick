@@ -28,7 +28,7 @@ view model =
                         renderStart model
                     
                     Model.Rule -> 
-                        []
+                        renderRuleHtml model
 
                     Model.Story n->
                        renderStory model n
@@ -110,8 +110,19 @@ view model =
 
 viewAttrs = []
 
-renderBack = []
-    --[ renderButton Back "img/back.png" size (Vector (model.size.x/2-60) (model.size.y/2-100)) ]
+renderBack model= 
+    let
+        size = Vector 40 60
+        pos = Vector 10 (model.size.y/2-30)
+    in
+     [ renderButton (Turn -1) "img/back.png" size pos]
+
+renderForward model= 
+    let
+        size = Vector 40 60
+        pos = Vector (model.size.x-100) (model.size.y/2-30)
+    in
+     [ renderButton (Turn 1) "img/forward.png" size pos]
 
 
 renderState player = 
@@ -136,7 +147,9 @@ renderState player =
 
          
 renderRuleSvg model=
-    [renderImage "img/rule.png" model.size (Vector 0 0) []]
+    [   renderImage "img/rule.png" model.size (Vector 0 0) []]
+renderRuleHtml model =
+       renderBack model
 renderStorySvg model n=
     if n<17 then
         [renderImage ("img/dialog/"++(String.fromFloat (toFloat n))++".png") model.size (Vector 0 0) []]
@@ -144,10 +157,15 @@ renderStorySvg model n=
         []
 
 
+
+
+
+
     
 renderStory model n=
+    renderBack model ++
     if n<17 then
-        []
+        renderForward model
     else
         renderChoosePlayerImg model
 
@@ -289,8 +307,8 @@ renderButton msg url size pos=
         , Html.Attributes.style "bottom" "30px"
         , Html.Attributes.style "cursor" "pointer"
         , Html.Attributes.style "display" "block"
-        , Html.Attributes.style "height" "60px"
-        , Html.Attributes.style "left" "30px"
+        , Html.Attributes.style "height" "0px"
+        , Html.Attributes.style "left" "0px"
         , Html.Attributes.style "line-height" "60px"
         , Html.Attributes.style "outline" "none"
         , Html.Attributes.style "padding" "0"
@@ -312,7 +330,6 @@ renderStart model=
     in
     [ renderButton Start "img/button/start.png" size (Vector (model.size.x/2-60) (model.size.y/2-100))
     , renderButton Message.Story "img/button/story.png" size (Vector (model.size.x/2-60) (model.size.y/2-20))
-        
     , renderButton Message.Rule "img/button/rule.png" size (Vector (model.size.x/2-60) (model.size.y/2+60))]
     ++ renderChoosePlayer model.attrs.playersNum size (Vector (model.size.x/2-60) (model.size.y/2+140))
     

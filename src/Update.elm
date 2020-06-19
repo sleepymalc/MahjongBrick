@@ -74,9 +74,15 @@ update msg model =
                 Model.Story n ->
                     if (n+moveDirection) <= 17 && (n+moveDirection) >=1 then
                         ({model | state = Model.Story (n+moveDirection)} , Cmd.none )
-                    else ( model, Cmd.none )
+                    else if (n+moveDirection) <1 then ({model | state = Model.Paused} , Cmd.none )
+                    else  ( model, Cmd.none )
+                Model.Rule ->
+                    ({model | state = Model.Paused} , Cmd.none )
                 _ ->
                     ( model, Cmd.none )
+
+
+                   
         ChangePlayersNumStart num ->
             model |> setPlayersNum num |> start 
 
