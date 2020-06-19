@@ -20,7 +20,7 @@ view model =
                 case model.state of
                     Playing->
                         audio
-                            [src "bgm/bgm1.mp3", autoplay True, loop True]
+                            [src "bgm/kttbgm.mp3", autoplay True, loop True]
                             [Html.text "Your browser does not support the audio"]
                         :: List.map renderAudio model.audioList
 
@@ -28,10 +28,10 @@ view model =
                         renderStart model
                     
                     Model.Rule -> 
-                        renderRule model
+                        []
 
                     Model.Story n->
-                        renderStory model n
+                       renderStory model n
                     Win player ->
                         renderOver model player
 
@@ -67,10 +67,16 @@ view model =
                                 (renderPlayerPlaying model.bricks model.player2)
                             ]
                     Model.Rule -> 
-                        []
+                        [ svg
+                            (fullUIAttribute model.size)
+                            (renderRuleSvg model) 
+                        ]
 
                     Model.Story n-> 
-                        []
+                        [ svg
+                            (fullUIAttribute model.size)
+                            (renderStorySvg model n)
+                        ]
                     Win player ->
                         case player of 
                             Player1 ->
@@ -104,6 +110,9 @@ view model =
 
 viewAttrs = []
 
+renderBack = []
+    --[ renderButton Back "img/back.png" size (Vector (model.size.x/2-60) (model.size.y/2-100)) ]
+
 
 renderState player = 
     let
@@ -126,14 +135,19 @@ renderState player =
             
 
          
-renderRule model=[div[][img [width (String.fromFloat model.size.x), height (String.fromFloat model.size.y) ,src "img/rule.png"] []]]
+renderRuleSvg model=
+    [renderImage "img/rule.png" model.size (Vector 0 0) []]
+renderStorySvg model n=
+    if n<17 then
+        [renderImage ("img/dialog/"++(String.fromFloat (toFloat n))++".png") model.size (Vector 0 0) []]
+    else
+        []
+
+
+    
 renderStory model n=
     if n<17 then
-        [ div[]
-        [ img [width (String.fromFloat model.size.x)
-        , height (String.fromFloat model.size.y) 
-        , src ("img/dialog/"++(String.fromFloat (toFloat n))++".png")
-        ] []]]
+        []
     else
         renderChoosePlayerImg model
 
@@ -155,7 +169,12 @@ gameUIAttribute size=
     , height (String.fromFloat size.y)
     , viewBox "0 0 600 800"
     ]
-transformedUI size setoff =
+fullUIAttribute size=
+    [ width (String.fromFloat size.x)
+    , height (String.fromFloat size.y)
+    ]
+
+transformedUI size setoff = 
     transform ("translate("++(String.fromFloat setoff)++" 0)")
     :: (gameUIAttribute size)
 
@@ -218,24 +237,14 @@ renderLogo =
     
 renderPaddle paddle =
     let
-        url =if paddle.size.x > Model.attribute.paddleSize.x*1.2 then
+        url =if paddle.size.x > Model.attribute.paddleSize.x*1.1 then
                 "img/paddleLong.png"
             else if paddle.size.x < Model.attribute.paddleSize.x*0.9 then
                 "img/paddleShort.png"
             else "img/paddle3.png"
     in
     renderImage url paddle.size paddle.pos []
-    {-rect
-        [ x (String.fromFloat paddle.pos.x)
-        , y (String.fromFloat paddle.pos.y)
-        , width (String.fromFloat paddle.size.x)
-        , height (String.fromFloat paddle.size.y)
-        , fill "black"
-        ]
-        []-}
         
-
-
     
 renderbackground =
     rect

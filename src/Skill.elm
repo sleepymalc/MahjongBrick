@@ -115,7 +115,12 @@ applyCard brick player =
 setPaddleSize times player=
     let 
         paddle = player.paddle
-        newPaddle = { paddle | size = Vector (paddle.size.x*times) paddle.size.y}
+        nextX = if (times == 0.8 && paddle.size.x > Model.attribute.paddleSize.x * 0.9) 
+                || (times == 1.25 && paddle.size.x < Model.attribute.paddleSize.x * 1.1) then
+                    paddle.size.x*times
+                else
+                    paddle.size.x
+        newPaddle = { paddle | size = Vector nextX paddle.size.y}
     in
         { player|paddle = newPaddle }
 
@@ -126,9 +131,9 @@ sendCard brick player =
             player |> apply (Winter 20)
         35 ->
             player |> apply (AllView 5)
-        36 ->
-            setPaddleSize 1.2 player 
         37 ->
+            setPaddleSize 1.25 player 
+        36 ->
             setPaddleSize 0.8 player 
         43 ->
             { player| taunted =10 }
@@ -141,6 +146,6 @@ applySkill player1 player2 =
         sendedplayer1 = List.foldl sendCard player1 player2.skill
         applyedplayer1 = List.foldl applyCard sendedplayer1 player1.skill
         applyedplayer2 = List.foldl applyCard sendedplayer2 player2.skill
-
+        
     in
         ( { applyedplayer1| skill = []}, {applyedplayer2| skill = []} )

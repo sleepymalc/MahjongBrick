@@ -101,7 +101,7 @@ type alias CustomAttribute =
 attribute =
     { range = Vector 600 800
     , bricksNum = Vector 13 3--need change?
-    , totalBricksNum = 42 * 4
+    , totalBricksNum = 43 * 4
     , defaultBallSpeed =Vector 3 -2
     , handcardPosY = 650
     , brickCount = 4
@@ -198,7 +198,7 @@ initPlayer =
     , moveHandcard = 0
     , droppedcard = []
     , state = None
-    , taunted = 10
+    , taunted = 0
     }
     
 initPaddle : Paddle
