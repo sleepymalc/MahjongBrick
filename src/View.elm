@@ -132,15 +132,15 @@ renderState player =
     in
         case player.state of
             Spring _->
-                [renderImage ("img/suit/39.png") size pos []]
+                [renderImage ("img/state/spring.png") size pos []]
             Summer _->
-                [renderImage ("img/suit/40.png") size pos []]
+                [renderImage ("img/state/summer.png") size pos []]
             Autumn _->
-                [renderImage ("img/suit/41.png") size pos []]
+                [renderImage ("img/state/autumn.png") size pos []]
             Winter _->
-                [renderImage ("img/suit/42.png") size pos []]
+                [renderImage ("img/state/winter.png") size pos []]
             AllView _->
-                [renderImage ("img/suit/36.png") size pos []]
+                []
             None ->
                 []
             
@@ -151,21 +151,31 @@ renderRuleSvg model=
 renderRuleHtml model =
        renderBack model
 renderStorySvg model n=
+    let
+        size = (Vector (model.size.x/3) (model.size.y/10))
+        pos = (Vector (model.size.x/3) (model.size.y*3/4))
+    in
     if n<17 then
         [renderImage ("img/dialog/"++(String.fromFloat (toFloat n))++".png") model.size (Vector 0 0) []]
+        ++ if n==15 then
+            [renderImage ("img/dialog/question.png") size pos []]
+           else
+            []
     else
         []
-
-
-
-
-
-
     
 renderStory model n=
     renderBack model ++
     if n<17 then
         renderForward model
+        ++ if n==15 then
+                let
+                    size = (Vector (model.size.x/6) (model.size.y/20))
+                    pos = (Vector (model.size.x/2) (model.size.y*17/20))
+                in
+                [ renderButton (Message.Rule) "img/dialog/jump.png" size pos ]
+           else
+            []
     else
         renderChoosePlayerImg model
 

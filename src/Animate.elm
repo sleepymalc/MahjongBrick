@@ -16,7 +16,7 @@ animate time model =
         
 
         (vaildBricks,invaildBricks) = model.bricks
-            |> List.partition (\brick-> brick.pos.y+brick.size.y >0)
+            |> List.partition (\brick-> brick.pos.y >=0)
             
         aftercollidebricks_1=vaildBricks
             |>List.map (\brick-> collideWith model.player1.ball brick)
@@ -45,13 +45,16 @@ animate time model =
             else 
                 model.audioList
 
+        (collideBricks,incollideBricks) = model.bricks
+            |> List.partition (\brick-> brick.pos.y + brick.size.y>=0)
+
         player1 = if model.attrs.playersNum == 2 then
                     model.player1
                         |> tickState (time/1000)
                         |> updateChosenCard model.attrs.handcardNum
                         |> catchHandcard
                         |> movePaddle time
-                        |> moveBall model.state vaildBricks
+                        |> moveBall model.state incollideBricks
                         |> moveFallingcard
                         |> addFallingcard eliminated_1
                 else model.player1
@@ -61,7 +64,7 @@ animate time model =
                     |> updateChosenCard model.attrs.handcardNum
                     |> catchHandcard
                     |> movePaddle time
-                    |> moveBall model.state vaildBricks
+                    |> moveBall model.state incollideBricks
                     |> moveFallingcard
                     |> addFallingcard eliminated_2
                 
