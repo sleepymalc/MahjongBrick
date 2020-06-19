@@ -35,7 +35,7 @@ type alias Brick =
 type State
     = Paused
     | Rule
-    | Story
+    | Story Int
     | Playing
     | Win PlayerNum
 
@@ -70,6 +70,7 @@ type alias Player =
     , moveHandcard: Int
     , droppedcard: List Brick 
     , state: PlayingState
+    , taunted: Float
     }
 type PlayingState =
     Spring Float
@@ -108,6 +109,7 @@ attribute =
     , brickSpeed = 1
     , maxPaddleSpeedX = 4
     , fiction = Vector 1 0
+    , paddleSize = Vector 200 20
     }
 
     
@@ -196,11 +198,12 @@ initPlayer =
     , moveHandcard = 0
     , droppedcard = []
     , state = None
+    , taunted = 10
     }
     
 initPaddle : Paddle
 initPaddle =
-    { size = Vector 200 20
+    { size = attribute.paddleSize
     , pos = Vector (attribute.range.x/2-200/2) (attribute.range.y*2/3+25) 
     , speed = Vector 0 0
     , accelaration = Vector 0 0

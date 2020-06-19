@@ -23,13 +23,7 @@ update msg model =
             )
 
         Start ->
-            ( { model
-                | state = Playing
-                , player1 = model.player1 |> setBallSpeed Model.attribute.defaultBallSpeed 
-                , player2 = model.player2 |> setBallSpeed Model.attribute.defaultBallSpeed
-              }
-            , Random.generate NewBricks Model.randomList
-            )
+            model |> start 
 
         Message.Rule -> 
             ( { model
@@ -42,11 +36,9 @@ update msg model =
 
         Message.Story ->
             ( { model
-                | state = Model.Story
-                , player1 = model.player1 |> setBallSpeed Model.attribute.defaultBallSpeed 
-                , player2 = model.player2 |> setBallSpeed Model.attribute.defaultBallSpeed
+                | state = Model.Story 1
               }
-            , Random.generate NewBricks Model.randomList
+            , Cmd.none
             )
 
         NewBricks values->
@@ -76,11 +68,35 @@ update msg model =
                     (model |> animate (min time 25) , Cmd.none )
                 _ ->
                     (model , Cmd.none )
+
+        Turn moveDirection ->
+            case model.state of
+                Model.Story n ->
+                    if (n+moveDirection) <= 17 && (n+moveDirection) >=1 then
+                        ({model | state = Model.Story (n+moveDirection)} , Cmd.none )
+                    else ( model, Cmd.none )
+                _ ->
+                    ( model, Cmd.none )
+        ChangePlayersNumStart num ->
+            model |> setPlayersNum num |> start 
+
+
+                    
         ChangePlayersNum num->
             (model |> setPlayersNum num, Cmd.none )
 
         Noop ->
             ( model, Cmd.none )
+
+start model =
+    ( { model
+            | state = Playing
+            , player1 = model.player1 |> setBallSpeed Model.attribute.defaultBallSpeed 
+            , player2 = model.player2 |> setBallSpeed Model.attribute.defaultBallSpeed
+            }
+        , Random.generate NewBricks Model.randomList
+        )
+
 
 setPlayersNum num model =
     let 

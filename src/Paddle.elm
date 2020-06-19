@@ -28,9 +28,10 @@ movePaddle time player=
 
 partPaddle paddle= 
     let
-        sizeX = ((nextPos paddle).x+paddle.size.x) - Model.attribute.range.x
+        --sizeX = ((nextPos paddle).x+paddle.size.x) - Model.attribute.range.x
+        posX = (nextPos paddle).x - Model.attribute.range.x
     in
-        {paddle| pos = Vector 0 paddle.pos.y, size = Vector sizeX paddle.size.y}
+        {paddle| pos = Vector posX paddle.pos.y}
 
 nextPos a= 
     addCoeffientVector 1 a.pos a.speed
