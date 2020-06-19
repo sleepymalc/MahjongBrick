@@ -27,7 +27,7 @@ update msg model =
 
         Message.Rule -> 
             ( { model
-                | state = Model.Rule
+                | state = Model.Rule 1
                 , player1 = model.player1 |> setBallSpeed Model.attribute.defaultBallSpeed 
                 , player2 = model.player2 |> setBallSpeed Model.attribute.defaultBallSpeed
               }
@@ -76,8 +76,12 @@ update msg model =
                         ({model | state = Model.Story (n+moveDirection)} , Cmd.none )
                     else if (n+moveDirection) <1 then ({model | state = Model.Paused} , Cmd.none )
                     else  ( model, Cmd.none )
-                Model.Rule ->
-                    ({model | state = Model.Paused} , Cmd.none )
+                Model.Rule n->
+                    if (n+moveDirection) <= 2 && (n+moveDirection) >=1 then
+                        ({model | state = Model.Rule (n+moveDirection)} , Cmd.none )
+                    else if (n+moveDirection) <1 then ({model | state = Model.Paused} , Cmd.none )
+                    else ({model | state = Model.Story 16} , Cmd.none )
+                    
                 _ ->
                     ( model, Cmd.none )
 

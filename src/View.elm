@@ -27,8 +27,8 @@ view model =
                     Paused->
                         renderStart model
                     
-                    Model.Rule -> 
-                        renderRuleHtml model
+                    Model.Rule n-> 
+                        renderRuleHtml model n
 
                     Model.Story n->
                        renderStory model n
@@ -66,10 +66,10 @@ view model =
                                 (transformedUI model.size (model.size.x*3/10))
                                 (renderPlayerPlaying model.bricks model.player2)
                             ]
-                    Model.Rule -> 
+                    Model.Rule n-> 
                         [ svg
                             (fullUIAttribute model.size)
-                            (renderRuleSvg model) 
+                            (renderRuleSvg model n) 
                         ]
 
                     Model.Story n-> 
@@ -146,10 +146,10 @@ renderState player =
             
 
          
-renderRuleSvg model=
-    [   renderImage "img/rule.png" model.size (Vector 0 0) []]
-renderRuleHtml model =
-       renderBack model
+renderRuleSvg model n=
+    [   renderImage ("img/rule"++(String.fromFloat (toFloat n))++".png") model.size (Vector 0 0) []]
+renderRuleHtml model n=
+       (renderBack model) ++ (renderForward model)
 renderStorySvg model n=
     let
         size = (Vector (model.size.x/3) (model.size.y/10))

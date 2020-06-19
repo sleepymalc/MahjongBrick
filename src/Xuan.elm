@@ -48,7 +48,7 @@ key state on keycode =
                 storyKey keycode
             else
                 Noop
-        Model.Rule ->
+        Model.Rule _->
             if on then
                 storyKey keycode
             else
