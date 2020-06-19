@@ -23,13 +23,7 @@ update msg model =
             )
 
         Start ->
-            ( { model
-                | state = Playing
-                , player1 = model.player1 |> setBallSpeed Model.attribute.defaultBallSpeed 
-                , player2 = model.player2 |> setBallSpeed Model.attribute.defaultBallSpeed
-              }
-            , Random.generate NewBricks Model.randomList
-            )
+            model |> start 
 
         Message.Rule -> 
             ( { model
@@ -43,10 +37,8 @@ update msg model =
         Message.Story ->
             ( { model
                 | state = Model.Story 1
-                , player1 = model.player1 |> setBallSpeed Model.attribute.defaultBallSpeed 
-                , player2 = model.player2 |> setBallSpeed Model.attribute.defaultBallSpeed
               }
-            , Random.generate NewBricks Model.randomList
+            , Cmd.none
             )
 
         NewBricks values->
@@ -85,6 +77,9 @@ update msg model =
                     else ( model, Cmd.none )
                 _ ->
                     ( model, Cmd.none )
+        ChangePlayersNumStart num ->
+            model |> setPlayersNum num |> start 
+
 
                     
         ChangePlayersNum num->
@@ -92,6 +87,16 @@ update msg model =
 
         Noop ->
             ( model, Cmd.none )
+
+start model =
+    ( { model
+            | state = Playing
+            , player1 = model.player1 |> setBallSpeed Model.attribute.defaultBallSpeed 
+            , player2 = model.player2 |> setBallSpeed Model.attribute.defaultBallSpeed
+            }
+        , Random.generate NewBricks Model.randomList
+        )
+
 
 setPlayersNum num model =
     let 

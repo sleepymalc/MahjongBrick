@@ -52,7 +52,20 @@ view model =
                                 (renderPlayerPlaying model.bricks model.player2)
                             ]
 
-                    Paused->[]--[ svg(transformedUI model.size (model.size.x*3/10))[renderLogo]]
+                    Paused->
+                        if model.attrs.playersNum == 2 then
+                            [ svg
+                                (transformedUI model.size (model.size.x/20))
+                                (renderPlayerPlaying model.bricks model.player1)
+                            , svg
+                                (transformedUI model.size (model.size.x*3/20))
+                                (renderPlayerPlaying model.bricks model.player2)
+                            ]
+                        else 
+                            [ svg
+                                (transformedUI model.size (model.size.x*3/10))
+                                (renderPlayerPlaying model.bricks model.player2)
+                            ]
                     Model.Rule -> 
                         []
 
@@ -99,28 +112,43 @@ renderState player =
     in
         case player.state of
             Spring _->
-                [renderImage ("img/suit/38.png") size pos []]
-            Summer _->
                 [renderImage ("img/suit/39.png") size pos []]
-            Autumn _->
+            Summer _->
                 [renderImage ("img/suit/40.png") size pos []]
-            Winter _->
+            Autumn _->
                 [renderImage ("img/suit/41.png") size pos []]
+            Winter _->
+                [renderImage ("img/suit/42.png") size pos []]
             AllView _->
-                [renderImage ("img/suit/35.png") size pos []]
+                [renderImage ("img/suit/36.png") size pos []]
             None ->
                 []
             
 
          
-renderRule model=[div[][img [width (String.fromFloat model.size.x), height (String.fromFloat model.size.y) ,src "img/rule.jpeg"] []]]
-renderStory model n=[
-    div[]
-    [ img [width (String.fromFloat model.size.x)
-    , height (String.fromFloat model.size.y) 
-    , src ("img/dialog/"++(String.fromFloat (toFloat n))++".png")
-    ] []]]
+renderRule model=[div[][img [width (String.fromFloat model.size.x), height (String.fromFloat model.size.y) ,src "img/rule.png"] []]]
+renderStory model n=
+    if n<17 then
+        [ div[]
+        [ img [width (String.fromFloat model.size.x)
+        , height (String.fromFloat model.size.y) 
+        , src ("img/dialog/"++(String.fromFloat (toFloat n))++".png")
+        ] []]]
+    else
+        renderChoosePlayerImg model
 
+renderChoosePlayerImg model=
+    let 
+        size = Vector ( model.size.x/2) ( model.size.y)
+        pos1 = Vector 0 0
+        pos2 = Vector ( model.size.x/2) 0
+    in
+    [
+        renderButton (Message.ChangePlayersNumStart 1) "img/dialog/solo.png" size pos1 
+       , renderButton (Message.ChangePlayersNumStart 2) "img/dialog/dual.png" size pos2 
+    ]
+    
+    
 
 gameUIAttribute size= 
     [ width (String.fromFloat (size.x*2/5))
@@ -145,6 +173,14 @@ renderPlayerPlaying bricks player =
     :: renderBricks (player.fallingcard ++ player.handcard)
     ++ renderState player
     ++ renderunBricks player (bricks)
+    ++ renderTaunt player.taunted
+
+
+renderTaunt lasttime = 
+    if lasttime <=0 then
+        []
+    else 
+        [renderImage "img/blueTiger/taunt.png" (Vector Model.attribute.range.x Model.attribute.range.y) (Vector 0 0) []]
 
 
 renderPlayerWin bricks player =
@@ -181,7 +217,14 @@ renderLogo =
     renderImage "img/logo.png" Model.attribute.range (Vector 0 0) []
     
 renderPaddle paddle =
-    renderImage "img/paddle3.png" paddle.size paddle.pos []
+    let
+        url =if paddle.size.x > Model.attribute.paddleSize.x*1.2 then
+                "img/paddleLong.png"
+            else if paddle.size.x < Model.attribute.paddleSize.x*0.9 then
+                "img/paddleShort.png"
+            else "img/paddle3.png"
+    in
+    renderImage url paddle.size paddle.pos []
     {-rect
         [ x (String.fromFloat paddle.pos.x)
         , y (String.fromFloat paddle.pos.y)
@@ -211,12 +254,9 @@ renderunBrick player brick =
                 AllView _->
                     brick.suit+1
                 _ -> 
-                    if brick.count== Model.attribute.brickCount then
-                        43
-                    else
-                        44
+                    44
     in
-    renderImage ("img/suit/"++String.fromInt imgIndex++".png") brick.size (Vector brick.pos.x (brick.pos.y+10)) []
+    renderImage ("img/suit/"++String.fromInt imgIndex++".png") brick.size (Vector brick.pos.x (brick.pos.y+10)) [opacity (String.fromFloat (toFloat brick.count/toFloat Model.attribute.brickCount))]
 
 renderunBricks player bricks=
     bricks
@@ -264,8 +304,8 @@ renderStart model=
     [ renderButton Start "img/button/start.png" size (Vector (model.size.x/2-60) (model.size.y/2-100))
     , renderButton Message.Story "img/button/story.png" size (Vector (model.size.x/2-60) (model.size.y/2-20))
         
-    , renderButton Message.Rule "img/button/rule.png" size (Vector (model.size.x/2-60) (model.size.y/2+60))
-    , renderChoosePlayer model.attrs.playersNum size (Vector (model.size.x/2-60) (model.size.y/2+140))]
+    , renderButton Message.Rule "img/button/rule.png" size (Vector (model.size.x/2-60) (model.size.y/2+60))]
+    ++ renderChoosePlayer model.attrs.playersNum size (Vector (model.size.x/2-60) (model.size.y/2+140))
     
 
 renderImage url size pos attr=
@@ -310,24 +350,25 @@ renderChoosePlayer chosen size pos=
                 , [ class "btn btn-primary"
                 ])
         attrs = 
-            [ Html.Attributes.style "left" ((String.fromFloat pos.x)++"px")
-            , Html.Attributes.style "top" ((String.fromFloat pos.y)++"px")
-            , Html.Attributes.style "width" "80px"
-            , Html.Attributes.style "height" "40px"]
+            [ Html.Attributes.style "top" ((String.fromFloat pos.y)++"px")
+            , Html.Attributes.style "position" "absolute"
+            , Html.Attributes.style "width" "60px"
+            , Html.Attributes.style "height" "30px"]
+        pos1 = Html.Attributes.style "left" ((String.fromFloat (pos.x))++"px")
+        pos2 =Html.Attributes.style "left" ((String.fromFloat (pos.x+60))++"px")
         
 
     in
-    div [ class "btn-group"]
     [
         stylesheet
         ,
         button 
-        (attrs ++ attr1)
-        [ Html.text "1-Player"]
+        (pos1::attrs ++ attr1)
+        [ Html.text "Solo"]
         ,
         button 
-        (attrs ++ attr2)
-        [ Html.text "2-Players"]
+        (pos2 :: attrs ++ attr2)
+        [ Html.text "Dual"]
         
     ]
 

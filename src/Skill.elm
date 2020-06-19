@@ -3,31 +3,37 @@ module Skill exposing (tickState,applySkill)
 import Model exposing (..)
 import Model exposing (PlayingState(..))
 
-tickState time player = 
-    case player.state of
-        Spring lasttime ->
-            if lasttime - time <= 0 then
-                player |> apply None
-            else { player | state = Spring (lasttime - time)}
-        Summer lasttime ->
-            if lasttime - time <= 0 then
-                player |> apply None
-            else { player | state = Summer (lasttime - time)}
-        Autumn lasttime ->
-            if lasttime - time <= 0 then
-                player |> apply None
-            else { player | state = Autumn (lasttime - time)}
+tickState time oldPlayer = 
+    let
+        player = if oldPlayer.taunted > 0 then
+                { oldPlayer| taunted = (oldPlayer.taunted - time)}
+            else 
+                oldPlayer
+    in
+        case player.state of
+            Spring lasttime ->
+                if lasttime - time <= 0 then
+                    player |> apply None
+                else { player | state = Spring (lasttime - time)}
+            Summer lasttime ->
+                if lasttime - time <= 0 then
+                    player |> apply None
+                else { player | state = Summer (lasttime - time)}
+            Autumn lasttime ->
+                if lasttime - time <= 0 then
+                    player |> apply None
+                else { player | state = Autumn (lasttime - time)}
 
-        Winter lasttime ->
-            if lasttime - time <= 0 then
-                player |> apply None
-            else { player | state = Winter (lasttime - time)}
-        AllView lasttime ->
-            if lasttime - time <= 0 then
-                player |> apply None
-            else { player | state = AllView (lasttime - time)}
-        None ->
-            player
+            Winter lasttime ->
+                if lasttime - time <= 0 then
+                    player |> apply None
+                else { player | state = Winter (lasttime - time)}
+            AllView lasttime ->
+                if lasttime - time <= 0 then
+                    player |> apply None
+                else { player | state = AllView (lasttime - time)}
+            None ->
+                player
 
 cancel player = 
     case player.state of
@@ -45,6 +51,8 @@ cancel player =
             
         Winter lasttime ->
             { player | state = None}
+            |> setBallSpeed  1.25
+            |> setFallingcardSpeed 1.25
         AllView lasttime ->
             { player | state = None}
         None ->
@@ -69,6 +77,8 @@ apply state player =
                 |> setFallingcardSpeed 1.25
             Winter lasttime ->
                 { canceledPlayer | state = state}
+                |> setBallSpeed  0.8
+                |> setFallingcardSpeed 0.8
             AllView lasttime ->
                 { canceledPlayer | state = state}
             None ->
@@ -118,8 +128,10 @@ sendCard brick player =
             player |> apply (AllView 5)
         36 ->
             setPaddleSize 1.2 player 
-        37->
+        37 ->
             setPaddleSize 0.8 player 
+        43 ->
+            { player| taunted =10 }
         _->
             player
 
