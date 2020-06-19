@@ -54,7 +54,7 @@ animate time model =
                         |> updateChosenCard model.attrs.handcardNum
                         |> catchHandcard
                         |> movePaddle time
-                        |> moveBall model.state incollideBricks
+                        |> moveBall model.state collideBricks
                         |> moveFallingcard
                         |> addFallingcard eliminated_1
                 else model.player1
@@ -64,7 +64,7 @@ animate time model =
                     |> updateChosenCard model.attrs.handcardNum
                     |> catchHandcard
                     |> movePaddle time
-                    |> moveBall model.state incollideBricks
+                    |> moveBall model.state collideBricks
                     |> moveFallingcard
                     |> addFallingcard eliminated_2
                 
