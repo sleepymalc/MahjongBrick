@@ -98,11 +98,14 @@ update msg model =
         Noop ->
             ( model, Cmd.none )
 
-start model =
-    ( { model
+start model=
+    let
+        (newModel , _)= (init ())
+    in
+    ( { newModel
             | state = Playing
-            , player1 = model.player1 |> setBallSpeed Model.attribute.defaultBallSpeed 
-            , player2 = model.player2 |> setBallSpeed Model.attribute.defaultBallSpeed
+            , player1 = newModel.player1 |> setBallSpeed Model.attribute.defaultBallSpeed 
+            , player2 = newModel.player2 |> setBallSpeed Model.attribute.defaultBallSpeed
             }
         , Random.generate NewBricks Model.randomList
         )
