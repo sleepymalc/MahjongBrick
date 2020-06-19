@@ -98,14 +98,11 @@ update msg model =
         Noop ->
             ( model, Cmd.none )
 
-start model=
-    let
-        (newModel , _)= (init ())
-    in
-    ( { newModel
+start model =
+    ( { model
             | state = Playing
-            , player1 = newModel.player1 |> setBallSpeed Model.attribute.defaultBallSpeed 
-            , player2 = newModel.player2 |> setBallSpeed Model.attribute.defaultBallSpeed
+            , player1 = model.player1 |> setBallSpeed Model.attribute.defaultBallSpeed 
+            , player2 = model.player2 |> setBallSpeed Model.attribute.defaultBallSpeed
             }
         , Random.generate NewBricks Model.randomList
         )
@@ -143,7 +140,7 @@ setPaddleAccelaration accelaration player =
 setBallSpeed: Vector Float -> Player-> Player--helper
 setBallSpeed speed player =
     let
-        ball = player.ball
+        ball = initBall
         newBall = {ball| speed=speed}
     in
         {player|ball=newBall}

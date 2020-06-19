@@ -39,12 +39,6 @@ animate time model =
                 (\brick-> Tuple.first(brick |> collideWith model.player2.ball) && brick.count<=0)
                 rest
 
-        audioList = 
-            if List.isEmpty (eliminated_1 ++ eliminated_2)==False then
-                "bgm/dice.wav"::model.audioList
-            else 
-                model.audioList
-
         (collideBricks,incollideBricks) = model.bricks
             |> List.partition (\brick-> brick.pos.y + brick.size.y>=0)
 
@@ -67,7 +61,16 @@ animate time model =
                     |> moveBall model.state collideBricks
                     |> moveFallingcard
                     |> addFallingcard eliminated_2
-                
+        audioList1 = if List.isEmpty (player1.skill++ player2.skill) ==False then
+            "Power Up Item 1.wav"::model.audioList
+            else
+                model.audioList
+
+        audioList = if List.isEmpty (eliminated_1 ++ eliminated_2)==False then
+            "bgm/dice.wav"::audioList1
+            else 
+                audioList1
+             
                 
         (newPlayer1 , newPlayer2) = applySkill player1 player2
         
