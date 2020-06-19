@@ -270,7 +270,7 @@ renderbackground =
         , y "0"
         , width (String.fromFloat Model.attribute.range.x)
         , height (String.fromFloat Model.attribute.range.y)
-        , fill "#222F53"--"#A87272"--"#D3D3D3"--"#A87272"--"#D4A1A1"--"#D3D3D3"--
+        , fill "#bac9b8"--"#A87272"--"#D3D3D3"--"#A87272"--"#D4A1A1"--"#D3D3D3"--
         ]
         []
     
