@@ -62,7 +62,7 @@ animate time model =
                     |> moveFallingcard
                     |> addFallingcard eliminated_2
         audioList1 = if List.isEmpty (player1.skill++ player2.skill) ==False then
-            "Power Up Item 1.wav"::model.audioList
+            "bgm/Power Up Item 1.wav"::model.audioList
             else
                 model.audioList
 
