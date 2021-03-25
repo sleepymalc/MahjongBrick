@@ -17,8 +17,4 @@
 
 ### 	Who is that mysterious?  And What is his intendence? More to find out by yourself. . .
 
-### 	To start the game:
-
 ### 	Enjoy!	
-
-
