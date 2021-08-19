@@ -29,6 +29,7 @@ According to the SJTU student handbook (2019 version),
 
 ## Contribution
 
+Jinyi Wu, Yunfei Li, Yi Wang
 The work are partially contributed to some other students, TAs and professors in JI, which would be listed if known.
 
 ## Reminder
