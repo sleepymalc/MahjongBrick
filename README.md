@@ -38,6 +38,8 @@ There are two modes: **SOLO** and **Dual**
 	<b>SOLO</b> mode
 </p>
 
+> Player should use `w`,`a`,`s`,`d` to control.
+
 ## Launch
 
 To play MahjongBrick, download [`index.html`](https://github.com/sleepymalc/MahjongBrick/blob/master/index.html) and open it with your browser.
