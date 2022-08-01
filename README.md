@@ -43,7 +43,7 @@ There are two modes: **SOLO** and **Dual**
 ## Launch
 
 To play MahjongBrick, download [`index.html`](https://github.com/sleepymalc/MahjongBrick/blob/master/index.html) and open it with your browser.
-> Due to copy-right of the source images we used, you can't build it on your local environment. If you're interested buying the images, please directly contact authors.
+> Due to copy-right of the source images we used, we didn't provide the source code and the source images. If you're interested buying the images, please directly contact authors.
 
 ## About Honor Code
 
