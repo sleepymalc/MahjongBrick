@@ -36,6 +36,11 @@ There are two modes: **SOLO** and **Dual**
 	SOLO mode
 </p>
 
+## Launch
+
+To play MahjongBrick, download [`index.html`](https://github.com/sleepymalc/MahjongBrick/blob/master/index.html) and open it with your browser.
+> Due to copy-right of the source images we used, you can't build it on your local environment. If you're interested buying the images, please directly contact authors.
+
 ## About Honor Code
 
 If there is the same project in the future in VG101, it is the responsibility of JI students not to copy or modify these codes, or TeX files because it is against the Honor Code. The owner of this repository doesn't take any commission for others' faults.
