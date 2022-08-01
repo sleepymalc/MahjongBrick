@@ -1,7 +1,4 @@
-
-elm-stuff/
-
-build/
-
-/index.html
+elm-stuff
+build
+index.html
 .DS_Store
