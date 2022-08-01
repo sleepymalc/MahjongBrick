@@ -62,7 +62,4 @@ According to the SJTU student handbook (2019 version),
 ---
 
 The works are partially contributed by some other students, TAs, and professors in JI, which would be listed if known.
-
-## Reminder
-
-If you find any problems in the repository, welcome to make an issue or pull request.
+> If you find any problems in the repository, welcome to make an issue or pull request.
