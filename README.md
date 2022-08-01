@@ -4,9 +4,9 @@
 	Breakout clone, but with Mahjong 🀄️..?
 </i></b></p>
 
-## Background story
+## Abstract
 
-Xiao Ming and Xiao Gang are two sophomore students in Joint Institute. Just after their first year, they found out that they can't afford one more year's tuition fee. But just as they were about to give up and drop out, there is a mysterious person showed up and offered an weird opportunity to earn their tuition.
+Xiao Ming and Xiao Gang are two sophomore students at Joint Institute. Just after their first year, they found out that they can't afford one more year's tuition fee. But just as they were about to give up and drop out, there is a mysterious person showed up and offered a weird opportunity to earn their tuition.
 
 Who is that mysterious? And what is he trying to do? More to find out by yourself...
 
