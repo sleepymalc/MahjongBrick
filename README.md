@@ -1,5 +1,9 @@
 # MahjongBrick
 
+<p align="center">
+	<img src="https://github.com/sleepymalc/MahjongBrick/blob/master/TC/play.png"/>
+</p>
+
 <p align="center"><b><i>
 	Breakout clone, but with Mahjong 🀄️..?
 </i></b></p>
@@ -14,7 +18,22 @@ Who is that mysterious? And what is he trying to do? More to find out by yoursel
 
 ### Rules
 
-![rules](https://github.com/sleepymalc/MahjongBrick/blob/master/src/img/rule2.png)
+<p align="center">
+	<img src="https://github.com/sleepymalc/MahjongBrick/blob/master/src/img/rule2.png"/>
+</p>
+
+### Mode
+
+There are two modes: **SOLO** and **Dual**
+
+<p align="center">
+	<img src="https://github.com/sleepymalc/MahjongBrick/blob/master/TC/dual.png"/>
+	dfds
+</p>
+
+<p align="center">
+	<img src="https://github.com/sleepymalc/MahjongBrick/blob/master/TC/solo.png"/>
+</p>
 
 ## About Honor Code
 
