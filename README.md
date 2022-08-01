@@ -20,11 +20,11 @@ According to the SJTU student handbook (2019 version),
 
 ## Contribution
 
-Authors:
-
 <p align="center"><b><i>
 	Jinyi Wu, Yunfei Li, Yi Wang, Pingbang Hu.
 </i></b></p>
+
+---
 
 The works are partially contributed by some other students, TAs, and professors in JI, which would be listed if known.
 
