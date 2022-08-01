@@ -27,9 +27,11 @@ Who is that mysterious? And what is he trying to do? More to find out by yoursel
 There are two modes: **SOLO** and **Dual**
 
 <p align="center">
-	<img src="https://github.com/sleepymalc/MahjongBrick/blob/master/TC/dual.png"/>
+	<img src="https://github.com/sleepymalc/MahjongBrick/blob/master/demo/dual.png"/>
 	DUAL mode
 </p>
+
+> Player 1 should use `w`,`a`,`s`,`d` to control, and Player 2 should use `↑`,`←`, `↓`, `→` to control.
 
 <p align="center">
 	<img src="https://github.com/sleepymalc/MahjongBrick/blob/master/TC/solo.png"/>
