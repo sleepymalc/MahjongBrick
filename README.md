@@ -28,11 +28,12 @@ There are two modes: **SOLO** and **Dual**
 
 <p align="center">
 	<img src="https://github.com/sleepymalc/MahjongBrick/blob/master/TC/dual.png"/>
-	dfds
+	DUAL mode
 </p>
 
 <p align="center">
 	<img src="https://github.com/sleepymalc/MahjongBrick/blob/master/TC/solo.png"/>
+	SOLO mode
 </p>
 
 ## About Honor Code
