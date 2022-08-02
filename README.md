@@ -1,7 +1,7 @@
 # MahjongBrick
 
 <p align="center">
-	<img src="https://github.com/sleepymalc/MahjongBrick/blob/master/demo/play.png"/>
+	<img src="./demo/play.png"/>
 </p>
 
 <p align="center"><b><i>
@@ -19,7 +19,7 @@ Who is that mysterious? And what is he trying to do? More to find out by yoursel
 ### Rules
 
 <p align="center">
-	<img src="https://github.com/sleepymalc/MahjongBrick/blob/master/demo/rule.png"/>
+	<img src="./demo/rule.png"/>
 </p>
 
 ### Mode
@@ -27,14 +27,14 @@ Who is that mysterious? And what is he trying to do? More to find out by yoursel
 There are two modes: **SOLO** and **Dual**
 
 <p align="center">
-	<img src="https://github.com/sleepymalc/MahjongBrick/blob/master/demo/dual.png"/>
+	<img src="./demo/dual.png"/>
 	<b>DUAL</b> mode
 </p>
 
 > Player 1 should use `w`,`a`,`s`,`d` to control, and Player 2 should use `↑`,`←`, `↓`, `→` to control.
 
 <p align="center">
-	<img src="https://github.com/sleepymalc/MahjongBrick/blob/master/demo/solo.png"/>
+	<img src="./demo/solo.png"/>
 	<b>SOLO</b> mode
 </p>
 
