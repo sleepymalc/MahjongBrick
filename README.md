@@ -5,7 +5,7 @@
 </p>
 
 <p align="center"><b><i>
-	Breakout clone, but with Mahjong 🀄️..?
+	Breakout clone, but with Mahjong...? 🀄️
 </i></b></p>
 
 ## Introduction
